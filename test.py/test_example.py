@@ -1,7 +1,8 @@
 import math
+import function_annotation
 
 
-
+"""
 #test sum(numbers: List[float]) -> float
 
 
@@ -22,3 +23,20 @@ def test_floor():
     
 # test f strings
 # test .format()
+"""
+
+
+def test_ceil():
+    assert function_annotation.ceil(6.01) == 7
+
+def test_floor():
+    assert function_annotation.floor(6.01) == 6
+
+def test_avg():
+    assert function_annotation.avg(4.0, 8.0) == 6
+
+def test_voting_age():
+    assert function_annotation.voting_age(18) == True
+
+def test_message():
+    assert function_annotation.message("frank") == "Good morning frank"
