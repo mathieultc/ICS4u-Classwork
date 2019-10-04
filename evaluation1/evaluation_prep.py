@@ -1,7 +1,8 @@
 from typing import List, Dict
 
+
 # exmaple 1
-def add(num1:int ,num2:int) -> int:
+def add(num1: int, num2: int) -> int:
     """A function that returns the sum of two integers
     Args:
         param1: A number
