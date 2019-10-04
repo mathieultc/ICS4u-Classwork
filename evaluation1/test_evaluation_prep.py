@@ -9,3 +9,7 @@ def test_add():
 def test_sum_list():
     assert evaluation_prep.sum_list([1, 2, 3]) == 6
     assert evaluation_prep.sum_list([0, 0, 0]) == 0
+
+#test example3
+def word_count():
+    pass
