@@ -5,8 +5,8 @@ from typing import List, Dict
 def add(num1: int, num2: int) -> int:
     """A function that returns the sum of two integers
     Args:
-        param1: A number
-        param2: another number
+        num1: A number
+        num2: another number
     Returns:
         sum of two integers
     """
@@ -17,7 +17,7 @@ def add(num1: int, num2: int) -> int:
 def sum_list(numbers: List[int]) -> int:
     """A function that returns the sum of numbers in a list
     Args:
-        param1: A list of numbers
+        numbers: A list of numbers
     Returns:
         The sum of the numbers from the list
 
@@ -31,7 +31,7 @@ def word_count(words: List[str]) -> Dict:
     """ A function that takes a list of words and returns a dictionary where the key
     is the word and the value is the number of times the word appeaers
     Args:
-        param1: A list of words
+        words: A list of words
     Returns:
         A dictionary where the key is the word and the value is the number of times it appears in the list
     """

@@ -16,4 +16,5 @@ def test_sum_list():
 #test example3
 def test_word_count():
     assert evaluation_prep.word_count(["word", "hello", "word"]) == {"word": 2, "hello": 1}
-    
+    assert evaluation_prep.word_count(["hello", "hello", "hello", "bye"]) == {"hello": 3, "bye": 1}
+    assert evaluation_prep.word_count([]) == {}
