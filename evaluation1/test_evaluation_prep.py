@@ -10,7 +10,7 @@ def test_add():
 #test example2
 def test_sum_list():
     assert evaluation_prep.sum_list([1, 2, 3]) == 6
-    assert evaluation_prep.sum_list([0, 0, 0]) == 0
+    assert evaluation_prep.sum_list([]) == 0
 
 
 #test example3

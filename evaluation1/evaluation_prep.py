@@ -14,7 +14,7 @@ def add(num1: int, num2: int) -> int:
 
 
 #example 2
-def sum_list(numbers: List[float]) -> float:
+def sum_list(numbers: List[int]) -> int:
     """A function that returns the sum of numbers in a list
     Args:
         param1: A list of numbers
@@ -27,7 +27,7 @@ def sum_list(numbers: List[float]) -> float:
 
 
 #example 3
-def word_count(words: List) -> Dict:
+def word_count(words: List[str]) -> Dict:
     """ A function that takes a list of words and returns a dictionary where the key
     is the word and the value is the number of times the word appeaers
     Args:
