@@ -69,7 +69,7 @@ class Teacher(Person):
         """
         self.OCT_PIN = OCT_PIN
         self.school = school
-        self.email_k12 = email_k12
+        super().__init__(email_k12)
         self.classes = []
 
     def assign_work(self, classroom: Classroom):
@@ -91,13 +91,14 @@ class Teacher(Person):
         
 
 class Classroom:
-    """
+    """Classroom class
     Attrs:
          subject_name(str): The course name of the class
          students(List): List of students in the class
     """
     def __init__(self, subject_name: str):
         """Creates a classroom object"""
+
         self._subject_name = subject_name
         self.students = []
 
@@ -108,11 +109,35 @@ class Classroom:
         self._subject_name = value
 
     def add_student(self):
-        pass
+        """add student to a class"""
+        self.students.append(student)
 
     def remove_student(self):
-        pass
+        """remove a student from a class"""
+        self.students.remvoe(student)
 
 class Student(Person):
-    pass
+    """Student class
+    Attrs:
+         email_k12(str): The student's email
+         student_id(int): Student identification
+    """
+    def __init__(self, email_k12: str, student_id: int):
+        """Creates a student object
+        Args:
+            email_k12: The student's email
+            student_id: The student identification
+        """
+        super().__init__(email_k12)
+        self._student_id = student_id
+
+    def get_student_id(self):
+        return self._student_id
+
+    def set_student_id(self, value):
+        self._student_id = value
+        
+    def greet(self):
+        """get the student to greet"""
+        print("Hi, everyone!")
 
