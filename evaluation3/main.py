@@ -60,7 +60,7 @@ class Teacher(Person):
            email_k12(str): The teacher's k12 email
            classes(List): A list of classes
     """
-    def __init__(self, OCT_PIN: int, school: str, email_k12: str)
+    def __init__(self, OCT_PIN: int, school: str, email_k12: str):
         """Creates a teacher object
         Args:
             OCT_PIN: teacher's pin
@@ -88,6 +88,14 @@ class Teacher(Person):
     def remove_class(self, classroom: Classroom):
         """remove class from the list"""
         self.classes.remove(classroom)
+
+    @classmethod
+    def search_teacher_pin(cls, pin: int):
+        pass
+
+    @classmethod
+    def search_teacher_lname(cls, last_name: str):
+        pass
         
 
 class Classroom:
