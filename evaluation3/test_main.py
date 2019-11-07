@@ -2,13 +2,13 @@ import datetime
 
 import pytest
 
-from main import Person
+from main import Person, Teacher, Classroom, Student
 
 
-'''
+
 def test_classroom_hidden_fields():
     math = Classroom("Math")
-    assert math._name == "Math"
+    assert math._subject_name == "Math"
     assert math._students == []
 
 
@@ -16,12 +16,12 @@ def test_classroom_getters_setters():
     math = Classroom("Math")
 
     assert math.get_students() == []
-    assert math.get_name() == "Math"
+    assert math.get_subject_name() == "Math"
 
-    math.set_name("Blah")
-    assert math.get_name() == "Blah"
+    math.set_subject_name("Blah")
+    assert math.get_subject_name() == "Blah"
 
-
+'''
 def test_classroom_add_remove_student():
     class StudentMock:
         pass
@@ -112,7 +112,6 @@ def test_person_get_age():
     person = Person("", "", datetime.datetime(now.year-5, 1, 1))
     assert person.get_age() == 5
 
-'''
 def test_student_init():
     student = Student("first", "last", datetime.datetime(2002, 1, 1), 1234)
     assert isinstance(student, Person)
@@ -159,6 +158,7 @@ def test_teacher_init():
     assert teacher._email_k12 == "john.smith@ycdsb.ca"
     assert teacher._classes == []
 
+
 def test_teacher_getters_setters():
     teacher = Teacher("John", "Smith", datetime.datetime(2020, 1, 1), 1234)
     assert teacher.get_first_name() == "John"
@@ -168,7 +168,7 @@ def test_teacher_getters_setters():
 
     teacher.set_school("St. Joan")
     assert teacher.get_school() == "St. Joan"
-
+'''
 def test_teacher_add_remove_class():
     teacher = Teacher("John", "Smith", datetime.datetime(2020, 1, 1), 1234)
     some_class = Classroom("Math")
@@ -230,4 +230,4 @@ def test_cant_assign_work_to_someone_elses_class():
     someone_elses_class = Classroom("Computer Studies")
     with pytest.raises(Exception):
         teacher.assign_work(someone_elses_class)
-        '''
+'''
