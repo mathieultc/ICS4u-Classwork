@@ -86,6 +86,10 @@ class Teacher(Person):
     def set_school(self, value: str):
         self._school = value
 
+    def greet(self) -> str:
+        """Get the teacher to greet"""
+        return f"Hello, my name is {self._first_name} {self._last_name} and I'm a teacher."
+
 class Student(Person):
     """class student
     Attrs:
@@ -109,6 +113,7 @@ class Student(Person):
         return f"{self._first_name.lower()}.{self._last_name.lower()}{grad_year}@ycdsbk12.ca"
 
     def greet(self) -> str:
+        """Get the student to greet"""
         return f"Hello, my name is {self._first_name} {self._last_name} and I'm a student."
 
 
@@ -138,6 +143,20 @@ class Classroom:
 
     def set_students(self, value: List):
         self._students = value
+
+    def add_student(self, student: Student):
+        """Add student to the student list"""
+        if student in self._students:
+            raise Exception
+        else:
+            self._students.append(student)
+        
+    def remove_student(self, student: Student):
+        """Remove student from the student list"""
+        if student not in self._students:
+            raise Exception
+        else:
+            self._students.remove(student)
 
 
 

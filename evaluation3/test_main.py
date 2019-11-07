@@ -21,7 +21,7 @@ def test_classroom_getters_setters():
     math.set_subject_name("Blah")
     assert math.get_subject_name() == "Blah"
 
-'''
+
 def test_classroom_add_remove_student():
     class StudentMock:
         pass
@@ -46,7 +46,7 @@ def test_classroom_add_remove_student():
     with pytest.raises(Exception):
         math.add_student(some_student)
 
-
+'''
 def test_classroom_warnings():
     assert Classroom.warnings == []
 
@@ -206,7 +206,7 @@ def test_teacher_assing_work():
     teacher.add_class(math)
 
     assert teacher.assign_work(math) == "John Smith assigns work to Math class."
-
+'''
 def test_teacher_greet():
     teacher = Teacher("John", "Smith", datetime.datetime(2020, 1, 1), 1234)
     assert teacher.greet() == "Hello, my name is John Smith and I'm a teacher."
@@ -230,4 +230,3 @@ def test_cant_assign_work_to_someone_elses_class():
     someone_elses_class = Classroom("Computer Studies")
     with pytest.raises(Exception):
         teacher.assign_work(someone_elses_class)
-'''
