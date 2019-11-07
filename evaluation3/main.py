@@ -123,6 +123,7 @@ class Classroom:
          subject_name(str): The classroom's subject name
          students(list): A list od students
     """
+    warnings = []
     def __init__(self, subject_name: str):
         """create classroom object
         Args:
@@ -148,8 +149,10 @@ class Classroom:
         """Add student to the student list"""
         if student in self._students:
             raise Exception
-        else:
+        elif len(self._students) < 34:
             self._students.append(student)
+        else:
+            Classroom.warnings.append(f"{self._subject_name} has more than 33 students")
         
     def remove_student(self, student: Student):
         """Remove student from the student list"""

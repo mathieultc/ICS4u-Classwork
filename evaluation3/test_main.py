@@ -46,7 +46,7 @@ def test_classroom_add_remove_student():
     with pytest.raises(Exception):
         math.add_student(some_student)
 
-'''
+
 def test_classroom_warnings():
     assert Classroom.warnings == []
 
@@ -60,7 +60,7 @@ def test_classroom_warnings():
     # should add a warning to the class variable 'warnings'
     warning_string = Classroom.warnings[0]
     assert warning_string == "Math has more than 33 students."
-'''
+
 
 def test_person_init():
     person = Person("John", "Smith", datetime.datetime(2019, 1, 1))
