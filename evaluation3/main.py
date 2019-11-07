@@ -147,19 +147,17 @@ class Classroom:
 
     def add_student(self, student: Student):
         """Add student to the student list"""
+        warning = f"{self._subject_name} has more than 33 students."
         if student in self._students:
-            raise Exception
-        elif len(self._students) < 34:
-            self._students.append(student)
-        else:
-            Classroom.warnings.append(f"{self._subject_name} has more than 33 students")
-        
+            raise Exception("You cannot add the same student")
+        self._students.append(student)
+
+        if len(self._students) > 33:
+            Classroom.warnings.append(warning)
+
     def remove_student(self, student: Student):
         """Remove student from the student list"""
-        if student not in self._students:
-            raise Exception
-        else:
-            self._students.remove(student)
+        self._students.remove(student)
 
 
 
