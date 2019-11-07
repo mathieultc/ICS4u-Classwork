@@ -168,7 +168,7 @@ def test_teacher_getters_setters():
 
     teacher.set_school("St. Joan")
     assert teacher.get_school() == "St. Joan"
-'''
+
 def test_teacher_add_remove_class():
     teacher = Teacher("John", "Smith", datetime.datetime(2020, 1, 1), 1234)
     some_class = Classroom("Math")
@@ -206,7 +206,7 @@ def test_teacher_assing_work():
     teacher.add_class(math)
 
     assert teacher.assign_work(math) == "John Smith assigns work to Math class."
-'''
+
 def test_teacher_greet():
     teacher = Teacher("John", "Smith", datetime.datetime(2020, 1, 1), 1234)
     assert teacher.greet() == "Hello, my name is John Smith and I'm a teacher."

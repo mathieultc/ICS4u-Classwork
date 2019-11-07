@@ -86,9 +86,33 @@ class Teacher(Person):
     def set_school(self, value: str):
         self._school = value
 
+    def get_classes(self) -> List:
+        return self._classes
+
+    def set_classes(self, value: List) -> None:
+        self._classes = value
+
     def greet(self) -> str:
         """Get the teacher to greet"""
         return f"Hello, my name is {self._first_name} {self._last_name} and I'm a teacher."
+
+    def add_class(self, classroom: "Classroom"):
+        """Add a new class to the class list"""
+        if classroom in self._classes:
+            raise Exception("You are teaching two of the same class")
+
+        if len(self._classes) >= 6:
+            raise Exception("A teacher cannot have more than 6 classes")
+
+        self._classes.append(classroom)
+   
+    def remove_class(self, classroom: "Classroom"):
+        """Remove a class from the class list"""
+        self._classes.remove(classroom)
+
+    def assign_work(self, classroom: "Classroom"):
+        return f"{self._first_name} {self._last_name} assigns work to {classroom._subject_name} class."
+
 
 class Student(Person):
     """class student
