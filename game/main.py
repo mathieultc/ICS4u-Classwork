@@ -1,8 +1,7 @@
 import arcade
 
-WIDTH = 800
-HEIGHT = 600
-
+width = 500
+height = 500
 
 class MyGame(arcade.Window):
     def __init__(self, width, height, title):
@@ -11,35 +10,36 @@ class MyGame(arcade.Window):
         arcade.set_background_color(arcade.color.WHITE)
 
     def setup(self):
-        self.player = arcade.Sprite(filename="game/images/sonic.jpg", center_x= 200, center_y = 200, scale=0.2)
-        self.obs = arcade.draw_circle_filled(center_x = 500, center_y = 300, 20, arcade.color.BLUE)
+        self.drawing = arcade.Sprite(filename = "images/sonic.jpg", center_x = 250, center_y = 250, scale = 0.2)
 
     def on_draw(self):
         arcade.start_render()
-        self.player.draw()
-
-        for _  in range(10):
-            self.obs.draw()
+        self.drawing.draw()
 
     def update(self, delta_time):
-        self.player.update()
-        self.player.change_y *= 0.98
+        self.drawing.update()
+        self.drawing.change_x *= 0.98
+        self.drawing.change_y *= 0.98
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
-            self.player.change_y = 3
+            self.drawing.change_y = 1
         if key == arcade.key.S:
-            self.player.change_y = -3
+            self.drawing.change_y = -1
+        if key == arcade.key.D:
+            self.drawing.change_x = 1
+        if key == arcade.key.A:
+            self.drawing.change_x = -1
 
-    
+    def check_boundaries(self):
+        if self.drawing.center_x > 500:
+            self.drawing.center_x = 500
+
 
 def main():
-    game = MyGame(WIDTH, HEIGHT, "my game")
+    game = MyGame(width, height, "game")
     game.setup()
     arcade.run()
 
-
 if __name__ == "__main__":
     main()
-
-    
