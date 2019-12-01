@@ -97,9 +97,19 @@ def count8(n: int) -> int:
     elif n % 10 == 8:
         return 1 + count8(n//10)
     
-
     else:
         return count8(n//10)
+
+
+def powerN(base: int, n: int) -> int:
+    if n == 0:
+        return 1
+    
+    elif n == 1:
+        return base
+
+    return base * powerN(base, n - 1)
+
 
  
 
