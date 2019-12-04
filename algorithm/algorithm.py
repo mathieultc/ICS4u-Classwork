@@ -102,13 +102,13 @@ def count8(n: int) -> int:
 
 
 def powerN(base: int, n: int) -> int:
-    if n == 0:
+    if n == 0: #base case
         return 1
     
     elif n == 1:
         return base
 
-    return base * powerN(base, n - 1)
+    return base * powerN(base, n - 1) #recursive case
 
 
  
