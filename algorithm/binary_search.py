@@ -1,3 +1,5 @@
+from typing import List
+
 def binary_search(target: int, numbers: int) -> int:
     start = 0
     end = len(numbers) - 1
@@ -17,7 +19,21 @@ def binary_search(target: int, numbers: int) -> int:
         else:
             return -1
 
+#recursion
+def binarySearch(numbers: List[int], start: int, end: int, target: int) -> int:
+    if start <= end: #base case
+        mid = (start + end)//2
+        if numbers[mid] == target:
+            return mid
 
-result = binary_search(3, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-print(result)
+        elif numbers[mid] < target:
+            return binarySearch(numbers, mid + 1, end, target)
 
+        elif numbers[mid] > target:
+            return binarySearch(numbers, start, mid - 1, target)
+
+    return -1
+
+
+numbers = [1, 2, 3, 4, 5]
+print(binarySearch(numbers, numbers[0], len(numbers)-1, 4))
