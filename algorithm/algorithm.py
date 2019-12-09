@@ -111,6 +111,34 @@ def powerN(base: int, n: int) -> int:
     return base * powerN(base, n - 1) #recursive case
 
 
+def countX(word: str) -> int:
+    n = len(word)
+    if word == "":
+        return 0    #base case
+
+    elif word[n-1] == 'x':
+        return 1 + countX(word[0: n - 1])
+
+    else:
+        return 0 + countX(word[0: n - 1]) #recursive  step
+
+
+def countHi(word: str) -> int:
+    if word == "":
+        return 0
+    
+    elif word[-2:len(word)] == 'hi':
+        return 1 + countHi(word[0:len(word)-2])
+
+    else:
+        return 0 + countHi(word[0:len(word)-1])
+
+
+
+
+
+
+
  
 
 

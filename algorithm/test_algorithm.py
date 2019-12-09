@@ -1,6 +1,6 @@
 # Recursion-1 > factorial (p154669)
 
-from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN
+from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN, countX, countHi
 
 #factorial
 def test_0():
@@ -303,3 +303,64 @@ def test_9():
 
 def test_10():
     assert powerN(10, 3) == 1000
+
+
+#countx
+def test_0():
+    assert countX("xxhixx") == 4
+
+def test_1():
+    assert countX("xhixhix") == 3
+
+def test_2():
+    assert countX("hi") == 0
+
+def test_3():
+    assert countX("h") == 0
+
+def test_4():
+    assert countX("x") == 1
+
+def test_5():
+    assert countX("") == 0
+
+def test_6():
+    assert countX("hihi") == 0
+
+def test_7():
+    assert countX("hiAAhi12hi") == 0
+
+
+##countHi
+def test_0():
+    assert countHi("xxhixx") == 1
+
+def test_1():
+    assert countHi("xhixhix") == 2
+
+def test_2():
+    assert countHi("hi") == 1
+
+def test_3():
+    assert countHi("hihih") == 2
+
+def test_4():
+    assert countHi("h") == 0
+
+def test_5():
+    assert countHi("") == 0
+
+def test_6():
+    assert countHi("ihihihihih") == 4
+
+def test_7():
+    assert countHi("ihihihihihi") == 5
+
+def test_8():
+    assert countHi("hiAAhi12hi") == 3
+
+def test_9():
+    assert countHi("xhixhxihihhhih") == 3
+
+def test_10():
+    assert countHi("ship") == 1
