@@ -3,7 +3,7 @@
 - Base case: What is the final end-point of this algorithm?
 - Recursive case: Call the function again. (algorithm not complete)
 """
-
+from typing import List
 
 def count_down(n):
     if n == 0: #base case
@@ -133,19 +133,65 @@ def countHi(word: str) -> int:
     else:
         return 0 + countHi(word[0:len(word)-1])
 
+
 def changeXY(word: str) -> str:
     n = len(word)
+    if word == 'x':
+        return 'y'
+    
+    elif len(word) == 0:
+        return ""
 
-    if len(word) == 1:
-        return word
+    elif word[0] == "x":
+        return "y" + changeXY(word[1: n])
 
+    return word[0] + changeXY(word[1: n])
+
+
+def noX(word: str) -> str:
+    n = len(word)
+
+    if word == '' or word == 'x':
+       return ''
+    
     elif word[0] == 'x':
-        return 'y' + changeXY(word[1: n])
+        return '' + noX(word[1: n])
 
     else:
-        return word[0] + changeXY(word[1: n])
+        return word[0] + noX(word[1: n])
+    
 
+def changePi(word: str) -> str:
+    n = len(word)
+    
+    if word == "pi":
+        return '3.14'
 
+    elif n == 0:
+        return ''
+
+    elif word[0:2] == 'pi':
+        return '3.14' + changePi(word[2: n])
+
+    else:
+        return word[0] + changePi(word[1: n])
+
+    
+
+def array6(numbers: List, index: int) -> bool:
+    n = len(numbers)
+
+    if index < n:
+        if numbers[index] == 6:
+            return True
+        
+        else:
+            return array6(numbers, index+1)
+
+    else:
+        return False
+
+    
 
 
 

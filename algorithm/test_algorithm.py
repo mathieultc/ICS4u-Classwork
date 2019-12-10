@@ -1,6 +1,6 @@
 # Recursion-1 > factorial (p154669)
 
-from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN, countX, countHi
+from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN, countX, countHi, changeXY, noX, changePi, array6
 
 #factorial
 def test_0():
@@ -364,3 +364,112 @@ def test_9():
 
 def test_10():
     assert countHi("ship") == 1
+
+#changXY
+def test_0():
+    assert changeXY("codex") == "codey"
+
+def test_1():
+    assert changeXY("xxhixx") == "yyhiyy"
+
+def test_2():
+    assert changeXY("xhixhix") == "yhiyhiy"
+
+def test_3():
+    assert changeXY("hiy") == "hiy"
+
+def test_4():
+    assert changeXY("h") == "h"
+
+def test_5():
+    assert changeXY("x") == "y"
+
+def test_6():
+    assert changeXY("") == ""
+
+def test_7():
+    assert changeXY("xxx") == "yyy"
+
+def test_8():
+    assert changeXY("yyhxyi") == "yyhyyi"
+
+def test_9():
+    assert changeXY("hihi") == "hihi"
+
+#noX
+def test_0():
+    assert noX("xaxb") == "ab"
+
+def test_1():
+    assert noX("abc") == "abc"
+
+def test_2():
+    assert noX("xx") == ""
+
+def test_3():
+    assert noX("") == ""
+
+def test_4():
+    assert noX("axxbxx") == "ab"
+
+def test_5():
+    assert noX("Hellox") == "Hello"
+
+#changePi
+
+def test_0():
+    assert changePi("xpix") == "x3.14x"
+
+def test_1():
+    assert changePi("pipi") == "3.143.14"
+
+def test_2():
+    assert changePi("pip") == "3.14p"
+
+def test_3():
+    assert changePi("pi") == "3.14"
+
+def test_4():
+    assert changePi("hip") == "hip"
+
+def test_5():
+    assert changePi("p") == "p"
+
+def test_6():
+    assert changePi("x") == "x"
+
+def test_7():
+    assert changePi("") == ""
+
+def test_8():
+    assert changePi("pixx") == "3.14xx"
+
+def test_9():
+    assert changePi("xyzzy") == "xyzzy"
+
+
+#array6
+
+def test_0():
+    assert array6([1, 6, 4], 0) == True
+
+def test_1():
+    assert array6([1, 4], 0) == False
+
+def test_2():
+    assert array6([6], 0) == True
+
+def test_3():
+    assert array6([], 0) == False
+
+def test_4():
+    assert array6([6, 2, 2], 0) == True
+
+def test_5():
+    assert array6([2, 5], 0) == False
+
+def test_6():
+    assert array6([1, 9, 4, 6, 6], 0) == True
+
+def test_7():
+    assert array6([2, 5, 6], 0) == True
