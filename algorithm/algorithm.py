@@ -133,6 +133,19 @@ def countHi(word: str) -> int:
     else:
         return 0 + countHi(word[0:len(word)-1])
 
+def changeXY(word: str) -> str:
+    n = len(word)
+
+    if len(word) == 1:
+        return word
+
+    elif word[0] == 'x':
+        return 'y' + changeXY(word[1: n])
+
+    else:
+        return word[0] + changeXY(word[1: n])
+
+
 
 
 
