@@ -1,6 +1,6 @@
 # Recursion-1 > factorial (p154669)
 
-from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN, countX, countHi, changeXY, noX, changePi, array6
+from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN, countX, countHi, changeXY, noX, changePi, array6, array11, array220
 
 #factorial
 def test_0():
@@ -473,3 +473,76 @@ def test_6():
 
 def test_7():
     assert array6([2, 5, 6], 0) == True
+
+
+#array11
+def test_0():
+    assert array11([1, 2, 11], 0) == 1
+
+def test_1():
+    assert array11([11, 11], 0) == 2
+
+def test_2():
+    assert array11([1, 2, 3, 4], 0) == 0
+
+def test_3():
+    assert array11([1, 11, 3, 11, 11], 0) == 3
+
+def test_4():
+    assert array11([11], 0) == 1
+
+def test_5():
+    assert array11([1], 0) == 0
+
+def test_6():
+    assert array11([], 0) == 0
+
+def test_7():
+    assert array11([11, 2, 3, 4, 11, 5], 0) == 2
+
+def test_8():
+    assert array11([11, 5, 11], 0) == 2
+
+
+#array220
+def test_0():
+    assert array220([1, 2, 20], 0) == True
+
+def test_1():
+    assert array220([3, 30], 0) == True
+
+def test_2():
+    assert array220([3], 0) == False
+
+def test_3():
+    assert array220([], 0) == False
+
+def test_4():
+    assert array220([3, 3, 30, 4], 0) == True
+
+def test_5():
+    assert array220([2, 19, 4], 0) == False
+
+def test_6():
+    assert array220([20, 2, 21], 0) == False
+
+def test_7():
+    assert array220([20, 2, 21, 210], 0) == True
+
+def test_8():
+    assert array220([2, 200, 2000], 0) == True
+
+def test_9():
+    assert array220([0, 0], 0) == True
+
+def test_10():
+    assert array220([1, 2, 3, 4, 5, 6], 0) == False
+
+def test_11():
+    assert array220([1, 2, 3, 4, 5, 50, 6], 0) == True
+
+def test_12():
+    assert array220([1, 2, 3, 4, 5, 51, 6], 0) == False
+
+def test_13():
+    assert array220([1, 2, 3, 4, 4, 50, 500, 6], 0) == True

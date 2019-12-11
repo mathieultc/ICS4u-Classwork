@@ -184,10 +184,33 @@ def array6(numbers: List, index: int) -> bool:
     if index < n:
         if numbers[index] == 6:
             return True
-        
         else:
             return array6(numbers, index+1)
 
+    else:
+        return False
+
+    
+def array11(numbers: List, index: int) -> int:
+    n = len(numbers)
+
+    if index < n:
+        if numbers[index] == 11:
+            return 1 + array11(numbers, index + 1)
+        else:
+            return 0 + array11(numbers, index + 1)
+    else:
+        return 0
+
+
+def array220(numbers: List, index: int) -> int:
+    n = len(numbers)
+
+    if index < n-1:
+        if numbers[index] * 10 == numbers[index + 1]:
+            return True
+        else:
+            return array220(numbers, index + 1)
     else:
         return False
 
