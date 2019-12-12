@@ -214,8 +214,61 @@ def array220(numbers: List, index: int) -> int:
     else:
         return False
 
-    
 
+def allStar(word: str) -> str:
+    n = len(word)
+
+    if n == 0:
+        return ''
+
+    elif n == 1:
+        return word
+
+    return word[0] + "*" + allStar(word[1: n])
+
+
+def pairStar(word: str) -> str:
+    n = len(word)
+
+    if n == 0:
+        return ''
+    
+    elif n == 1:
+        return word
+
+    elif word[0] == word[1]:
+        return word[0] + '*' + pairStar(word[1: n])
+
+    return word[0] + pairStar(word[1: n])
+
+
+def endX(word: str) -> str:
+    n = len(word)
+
+    if n == 0:
+        return ''
+
+    elif word[0] == 'x':
+        return endX(word[1:n]) + 'x'
+
+    else:
+        return word[0] + endX(word[1: n])
+
+
+def countAbc(word: str) -> int:
+    n = len(word)
+    
+    if n == 0:
+        return 0
+
+    elif word == 'abc':
+        return 1
+
+    elif word[0: 3] == 'abc' or word[0: 3] == 'aba':
+        return 1 + countAbc(word[2: n])
+
+    else:
+        return 0 + countAbc(word[1: n])
 
 
 

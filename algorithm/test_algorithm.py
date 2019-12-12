@@ -1,6 +1,6 @@
 # Recursion-1 > factorial (p154669)
 
-from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN, countX, countHi, changeXY, noX, changePi, array6, array11, array220
+from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN, countX, countHi, changeXY, noX, changePi, array6, array11, array220, allStar, pairStar, endX, countAbc
 
 #factorial
 def test_0():
@@ -546,3 +546,136 @@ def test_12():
 
 def test_13():
     assert array220([1, 2, 3, 4, 4, 50, 500, 6], 0) == True
+
+
+#allStar
+def test_0():
+    assert allStar("hello") == "h*e*l*l*o"
+
+def test_1():
+    assert allStar("abc") == "a*b*c"
+
+def test_2():
+    assert allStar("ab") == "a*b"
+
+def test_3():
+    assert allStar("a") == "a"
+
+def test_4():
+    assert allStar("") == ""
+
+def test_5():
+    assert allStar("3.14") == "3*.*1*4"
+
+def test_6():
+    assert allStar("Chocolate") == "C*h*o*c*o*l*a*t*e"
+
+def test_7():
+    assert allStar("1234") == "1*2*3*4"
+
+
+#pairStar
+
+def test_0():
+    assert pairStar("hello") == "hel*lo"
+
+def test_1():
+    assert pairStar("xxyy") == "x*xy*y"
+
+def test_2():
+    assert pairStar("aaaa") == "a*a*a*a"
+
+def test_3():
+    assert pairStar("aaab") == "a*a*ab"
+
+def test_4():
+    assert pairStar("aa") == "a*a"
+
+def test_5():
+    assert pairStar("a") == "a"
+
+def test_6():
+    assert pairStar("") == ""
+
+def test_7():
+    assert pairStar("noadjacent") == "noadjacent"
+
+def test_8():
+    assert pairStar("abba") == "ab*ba"
+
+def test_9():
+    assert pairStar("abbba") == "ab*b*ba"
+
+#endX
+def test_0():
+    assert endX("xxre") == "rexx"
+
+def test_1():
+    assert endX("xxhixx") == "hixxxx"
+
+def test_2():
+    assert endX("xhixhix") == "hihixxx"
+
+def test_3():
+    assert endX("hiy") == "hiy"
+
+def test_4():
+    assert endX("h") == "h"
+
+def test_5():
+    assert endX("x") == "x"
+
+def test_6():
+    assert endX("xx") == "xx"
+
+def test_7():
+    assert endX("") == ""
+
+def test_8():
+    assert endX("bxx") == "bxx"
+
+def test_9():
+    assert endX("bxax") == "baxx"
+
+def test_10():
+    assert endX("axaxax") == "aaaxxx"
+
+def test_11():
+    assert endX("xxhxi") == "hixxx"
+
+#countAbc
+def test_0():
+    assert countAbc("abc") == 1
+
+def test_1():
+    assert countAbc("abcxxabc") == 2
+
+def test_2():
+    assert countAbc("abaxxaba") == 2
+
+def test_3():
+    assert countAbc("ababc") == 2
+
+def test_4():
+    assert countAbc("abxbc") == 0
+
+def test_5():
+    assert countAbc("aaabc") == 1
+
+def test_6():
+    assert countAbc("hello") == 0
+
+def test_7():
+    assert countAbc("") == 0
+
+def test_8():
+    assert countAbc("ab") == 0
+
+def test_9():
+    assert countAbc("aba") == 1
+
+def test_10():
+    assert countAbc("aca") == 0
+
+def test_11():
+    assert countAbc("aaa") == 0
