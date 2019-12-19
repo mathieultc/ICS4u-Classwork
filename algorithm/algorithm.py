@@ -271,6 +271,16 @@ def countAbc(word: str) -> int:
         return 0 + countAbc(word[1: n])
 
 
+def count11(word: str) -> str:
+    if word == '':
+        return 0
+
+    elif word[0:2] == '11':
+        return 1 + count11(word[2: len(word)])
+
+    return 0 + count11(word[1: len(word)])
+
+
 
 
 

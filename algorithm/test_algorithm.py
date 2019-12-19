@@ -1,6 +1,6 @@
 # Recursion-1 > factorial (p154669)
 
-from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN, countX, countHi, changeXY, noX, changePi, array6, array11, array220, allStar, pairStar, endX, countAbc
+from algorithm import factorial, fibonacci, bunnyEars, bunnyEars2, sumDigits, triangle, count7, count8, powerN, countX, countHi, changeXY, noX, changePi, array6, array11, array220, allStar, pairStar, endX, countAbc, count11
 
 #factorial
 def test_0():
@@ -679,3 +679,68 @@ def test_10():
 
 def test_11():
     assert countAbc("aaa") == 0
+
+
+#count11
+def test_0():
+    assert count11("11abc11") == 2
+
+def test_1():
+    assert count11("abc11x11x11") == 3
+
+def test_2():
+    assert count11("11abc11") == 2
+
+def test_1():
+    assert count11("abc11x11x11") == 3
+
+def test_2():
+    assert count11("111") == 1
+
+def test_3():
+    assert count11("1111") == 2
+
+def test_4():
+    assert count11("1") == 0
+
+def test_5():
+    assert count11("") == 0
+
+def test_6():
+    assert count11("hi") == 0
+
+def test_7():
+    assert count11("11x111x1111") == 4
+
+def test_8():
+    assert count11("1x111") == 1
+
+def test_9():
+    assert count11("1Hello1") == 0
+
+def test_10():
+    assert count11("Hello") == 0
+
+def test_3():
+    assert count11("1111") == 2
+
+def test_4():
+    assert count11("1") == 0
+
+def test_5():
+    assert count11("") == 0
+
+def test_6():
+    assert count11("hi") == 0
+
+def test_7():
+    assert count11("11x111x1111") == 4
+
+def test_8():
+    assert count11("1x111") == 1
+
+def test_9():
+    assert count11("1Hello1") == 0
+
+def test_10():
+    assert count11("Hello") == 0
