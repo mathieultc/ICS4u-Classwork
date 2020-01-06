@@ -11,7 +11,7 @@ class MyGame(arcade.Window):
         arcade.set_background_color(arcade.color.WHITE)
 
     def setup(self):
-        self.player = arcade.Sprite(filename="game/images/sonic.jpg", center_x= 200, center_y = 200, scale=0.2)
+        self.player = arcade.Sprite(filename="rough/images/officeguy.png", center_x= 200, center_y = 200, scale=0.2)
 
     def on_draw(self):
         arcade.start_render()
@@ -37,5 +37,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    
