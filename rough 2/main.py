@@ -27,7 +27,7 @@ GRAVITY = 0.2
 BOUNCINESS = 1
 
 class MyGame(arcade.Window):
-    def __init__(self, width, height, title):
+    def __init__(self, width: int, height: int, title: str) -> None:
         super().__init__(width, height, title)
 
         arcade.set_background_color(arcade.color.WHITE)
@@ -38,12 +38,12 @@ class MyGame(arcade.Window):
         self.random_y = bubbleSort(random.sample(range(50, HEIGHT + 500 , 50), 15))
 
         self.sprite1 = arcade.Sprite(center_x=self.random_x[0], center_y=self.random_y[0] + 200)
-        self.sprite1.texture = arcade.load_texture(file_name="images/officeguy.png", scale = 0.09)
+        self.sprite1.texture = arcade.load_texture(file_name="images/officeguy.png", scale = 0.05)
 
         
         for (i, j) in zip(self.random_x, self.random_y):
             self.obstacle = arcade.Sprite(center_x=i, center_y=j)
-            self.obstacle.texture = arcade.load_texture(file_name="images/desk.png", scale=0.1)
+            self.obstacle.texture = arcade.load_texture(file_name="images/platform.png", scale=0.1)
 
             self.obstacles_list.append(self.obstacle)
         
