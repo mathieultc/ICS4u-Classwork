@@ -26,6 +26,12 @@ WIDTH = 500
 GRAVITY = 0.2
 BOUNCINESS = 1
 
+class player:
+    pass
+
+class platform:
+    pass
+
 class MyGame(arcade.Window):
     def __init__(self, width: int, height: int, title: str) -> None:
         super().__init__(width, height, title)
@@ -34,7 +40,7 @@ class MyGame(arcade.Window):
 
 
         self.obstacles_list = []
-        self.random_x = random.sample(range(25, WIDTH, 75),3)
+        self.random_x = random.sample(range(25, WIDTH, 5),9)
         self.random_y = bubbleSort(random.sample(range(25, HEIGHT), 9))
 
         self.sprite1 = arcade.Sprite(center_x=self.random_x[0], center_y=self.random_y[0] + 200)

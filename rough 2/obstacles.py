@@ -161,4 +161,10 @@ def main():
 if __name__ == "__main__":
     main()
 
+#if hits bottom
+        if self.sprite1.center_y < 25 and self.sprite1.change_y < 0:
 
+            if self.sprite1.change_y * -1 > GRAVITY * 15:
+                self.sprite1.change_y *= -BOUNCINESS
+            else:
+                self.sprite1.change_y *= -BOUNCINESS / 2
