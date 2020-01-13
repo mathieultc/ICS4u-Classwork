@@ -82,9 +82,7 @@ class PlayerCharacter(arcade.Sprite):
             self.character_face_direction = LEFT_FACING
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
-        
-        elif self.change_y > 0:
-            self.texture = self.jump_texture[0]
+    
             
         # Idle animation
         if self.change_x == 0 and self.change_y == 0:
@@ -132,7 +130,7 @@ class MyGame(arcade.Window):
         self.score = 0
         self.player = PlayerCharacter()
 
-        self.player.center_x = 55
+        self.player.center_x = SCREEN_WIDTH//2
         self.player.center_y = SCREEN_HEIGHT // 2
         self.player.scale = 0.8
 
@@ -163,6 +161,7 @@ class MyGame(arcade.Window):
         """
         if key == arcade.key.SPACE:
             self.player.change_y = 2
+            self.player.texture = self.player.jump_texture[0]
 
             
     def on_key_release(self, key, modifiers):

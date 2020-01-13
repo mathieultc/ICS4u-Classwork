@@ -117,8 +117,7 @@ class PlayerCharacter(arcade.Sprite):
         if self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
         
-        if self.change_y > 0:
-            self.texture = self.jump_texture[0]
+       
             
         # Idle animation
         if self.change_x == 0 and self.change_y == 0:
@@ -139,6 +138,7 @@ class PlayerCharacter(arcade.Sprite):
             self.center_y += 2
             # self.vel initially set to 0
             self.vel -= 2
+            self.texture = self.jump_texture[0]
 
     
         else:
@@ -209,6 +209,7 @@ class Game(arcade.Window):
                       'highscore': arcade.load_texture(highscore)}
 
         self.double_jump = False
+        self.score_list = []
 
 
     def setup(self):
@@ -294,8 +295,9 @@ class Game(arcade.Window):
         if key == arcade.key.SPACE and self.double_jump:
             #If Space bar is pressed, self.jump is set to true and will aloow the player to jump
             self.jump = True
-           
 
+      
+          
     def on_mouse_press(self, x, y, button, modifiers):
         #Function for the restart button if game is gameover. If the coordinates of the mouse press are within the coordinates of the image it will update the game
         #state and call setup again which is going to draw all the images again.
@@ -324,6 +326,7 @@ class Game(arcade.Window):
         for num in str(self.score):
             self.score_board.append(arcade.Sprite(SCORE[num], 1, center_x= center , center_y=440))
             center += 24
+
 
 
     def on_update(self, delta_time):
@@ -372,7 +375,6 @@ class Game(arcade.Window):
             if self.player.center_y > self.platform_sprites[0].center_y + 128:
                 self.double_jump = False
             
-
             if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2 :
                 self.player.center_y = self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 + self.player.height//2
                 self.player.angle = 0
@@ -393,16 +395,13 @@ class Game(arcade.Window):
 
             self.scoreboard()
 
-
        
-
        
 
 def main():
     game = Game(SCREEN_WIDTH, SCREEN_WIDTH)
     game.setup()
     arcade.run()
-
 
 if __name__ == "__main__":
     main()
