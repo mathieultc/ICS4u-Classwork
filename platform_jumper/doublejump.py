@@ -65,11 +65,7 @@ class Player (arcade.AnimatedTimeSprite):
 
 
     def update(self,dt=0):
-        if self.dead:
-            self.angle = 90
-            if self.center_y > self.death_height + self.height//2:
-                self.center_y -= 4
-            return
+      
 
         if self.vel > 0:
             self.center_y += 2
@@ -145,6 +141,8 @@ class Game(arcade.Window):
                       'play': arcade.load_texture(play),
                       'highscore': arcade.load_texture(highscore)}
 
+        self.double_jump = False
+
     def setup(self):
         self.highscore = None
         self.score = 0
@@ -158,7 +156,7 @@ class Game(arcade.Window):
 
         start_platform1 = Platform.random_platform_generator(self.sprites, self.height)
         self.platform_sprites.append(start_platform1)
-        self.player = Player(55, self.height//2, 200)
+        self.player = Player(55, 550, 200)
 
         self.player_list.append(self.player)
 
@@ -219,7 +217,7 @@ class Game(arcade.Window):
             # If game state is back to playing , just change the state and return
             self.state = State.PLAYING
             
-        if key == arcade.key.SPACE:
+        if key == arcade.key.SPACE and self.double_jump:
             #If Space bar is pressed, self.jump is set to true and will aloow the player to jump
             self.jump = True
            
@@ -276,8 +274,6 @@ class Game(arcade.Window):
             if self.player.top > self.height:
                 self.player.top = self.height
 
-
-
             new_platform = None
 
             for plat in self.platform_sprites:
@@ -296,13 +292,18 @@ class Game(arcade.Window):
                 print(self.score)
 
             hit = arcade.check_for_collision_with_list(self.player, self.platform_sprites)
+            if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
+                self.double_jump = True
+
+            if self.player.center_y > self.platform_sprites[0].center_y + 128:
+                self.double_jump = False
             
 
-            if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2 and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
+            if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2 :
                 self.player.center_y = self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 + self.player.height//2
                 self.player.angle = 0
 
-            elif self.player.center_y + self.player.height//2 >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_y <= self.platform_sprites[0].center_y and self.player.center_x >= self.platform_sprites[0].center_x -self.platform_sprites[0].width//2 and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2:
+            if self.player.center_y + self.player.height//2 >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_y <= self.platform_sprites[0].center_y and self.player.center_x > self.platform_sprites[0].center_x - self.platform_sprites[0].width//2 and self.player.center_x < self.platform_sprites[0].center_x + self.platform_sprites[0].width//2:
                 self.state = State.GAME_OVER
 
 
@@ -312,12 +313,16 @@ class Game(arcade.Window):
             self.platform_sprites.update()
 
 
-        
-
-        elif self.state == State.GAME_OVER:
+    
+        if self.state == State.GAME_OVER:
             self.player.update()
 
             self.scoreboard()
+
+
+       
+
+       
 
 def main():
     game = Game(500, 500)

@@ -16,8 +16,6 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Move with a Sprite Animation Example"
 
-COIN_SCALE = 0.5
-COIN_COUNT = 50
 CHARACTER_SCALING = 0.5
 
 MOVEMENT_SPEED = 5
@@ -51,9 +49,7 @@ class PlayerCharacter(arcade.Sprite):
         self.cur_texture = 0
 
         # Track out state
-        self.jumping = False
-        self.climbing = False
-        self.is_on_ladder = False
+     
 
         # Adjust the collision box. Default includes too much empty space
         # side-to-side. Box is centered at sprite center, (0, 0)
@@ -136,14 +132,14 @@ class MyGame(arcade.Window):
         self.score = 0
         self.player = PlayerCharacter()
 
-        self.player.center_x = SCREEN_WIDTH // 2
+        self.player.center_x = 55
         self.player.center_y = SCREEN_HEIGHT // 2
         self.player.scale = 0.8
 
         self.player_list.append(self.player)
 
         # Set the background color
-        arcade.set_background_color(arcade.color.AMAZON)
+        arcade.set_background_color(arcade.color.WHITE)
 
     def on_draw(self):
         """
@@ -167,8 +163,8 @@ class MyGame(arcade.Window):
         """
         if key == arcade.key.SPACE:
             self.player.change_y = 2
-            
 
+            
     def on_key_release(self, key, modifiers):
         """
         Called when the user releases a key.
@@ -177,9 +173,6 @@ class MyGame(arcade.Window):
         self.key_press = []
         if key == arcade.key.SPACE:
             self.player.change_y = -2
-            self.key_press.append(key)     
-
-        print(self.key_press)
 
     def on_update(self, delta_time):
         """ Movement and game logic """
