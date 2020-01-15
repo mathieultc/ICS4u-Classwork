@@ -34,7 +34,7 @@ platform = "Objects" + os.sep + "sprites" + os.sep + "platform2.png"
 
 player = "Objects" + os.sep + "sprites" + os.sep + "officeguy.png"
 
-
+enemy = "Objects" + os.sep + "sprites" + os.sep + "enemy.png"
 
 # Start screen and game over images
 play = "Objects" + os.sep + "sprites" + os.sep + "play.png"
@@ -43,6 +43,7 @@ ready_message = "Objects" + os.sep + "sprites" + os.sep + "Readymessage.png"
 volume = "Objects" + os.sep + "sprites" + os.sep + "soundup.png"
 highscore = "Objects" + os.sep + "sprites" + os.sep + "highscore.png"
 gameover = "Objects" + os.sep + "sprites" + os.sep + "gameover2.png"
+
 
 
 # Images for the different numbers used in scoring
@@ -86,15 +87,17 @@ class PlayerCharacter(arcade.Sprite):
         self.vel = 0
         self.dead = False
 
+        # Track out state
+     
+
+        # Adjust the collision box. Default includes too much empty space
+        # side-to-side. Box is centered at sprite center, (0, 0)
+
+        # --- Load Textures ---
 
         # Images from Kenney.nl's Asset Pack 3
         main_path = ":resources:images/animated_characters/male_person/malePerson"
-        # main_path = ":resources:images/animated_characters/female_person/femalePerson"
-        # main_path = ":resources:images/animated_characters/male_person/malePerson"
-        # main_path = ":resources:images/animated_characters/male_adventurer/maleAdventurer"
-        # main_path = ":resources:images/animated_characters/zombie/zombie"
-        # main_path = ":resources:images/animated_characters/robot/robot"
-
+   
         # Load textures for idle standing
         self.idle_texture_pair = load_texture_pair(f"{main_path}_idle.png")
 
@@ -114,6 +117,8 @@ class PlayerCharacter(arcade.Sprite):
         if self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
         
+       
+            
         # Idle animation
         if self.change_x == 0 and self.change_y == 0:
         # Walking animation
@@ -121,6 +126,7 @@ class PlayerCharacter(arcade.Sprite):
             if self.cur_texture > 7 * UPDATES_PER_FRAME:
                 self.cur_texture = 0
             self.texture = self.walk_textures[self.cur_texture // UPDATES_PER_FRAME][self.character_face_direction]
+
 
         if self.dead:
             self.angle = 90
@@ -154,7 +160,6 @@ class Platform(arcade.Sprite):
         self.horizontal_speed = -3
         self.scored = False
 
-
     @classmethod
     def random_platform_generator(cls, sprites, height):
 
@@ -164,12 +169,31 @@ class Platform(arcade.Sprite):
         new_platform.width = random.randrange(100, 300)
         new_platform.height = 25
 
-      
+
         return new_platform
 
     def update(self):
         self.center_x += self.horizontal_speed
 
+class Enemy(arcade.Sprite):
+
+    def __init__(self, image):
+        super().__init__(image)
+
+        self.horizontal_speed = -3
+
+
+    @classmethod
+    def enemy_random_generator(cls, sprites, height):
+
+        new_enemy = cls(enemy)
+        new_enemy.left = 250
+        new_enemy.scale = 0.05
+
+        return new_enemy
+
+    def update(self):
+        self.center_x += self.horizontal_speed
 
 class Game(arcade.Window):
 
@@ -183,8 +207,8 @@ class Game(arcade.Window):
         self.player_list = None
         self.sprites = None
         self.platform_sprites = None
+        self.enemy_sprites = None
         self.player = None
-        self.enemy_list = None
         # Background texture
 
         # Score texture
@@ -216,19 +240,19 @@ class Game(arcade.Window):
         self.background = arcade.load_texture(random.choice(background))
         self.platform_sprites = arcade.SpriteList()
         self.player_list = arcade.SpriteList()
-        self.enemy_list = arcade.SpriteList()
+        self.enemy_sprites = arcade.SpriteList()
     
         self.sprites = dict()
         self.sprites['background'] = self.background
 
         start_platform1 = Platform.random_platform_generator(self.sprites, self.height)
         self.platform_sprites.append(start_platform1)
-
-        enemy = arcade.Sprite(center_x=start_platform1.center_x , center_y=start_platform1.center_y + 20)
-        enemy.texture = arcade.load_texture(file_name=":resources:images/enemies/wormGreen.png", scale=0.2)
-        self.enemy_list.append(enemy)
-
-
+       
+        start_enemy1 = Enemy.enemy_random_generator(self.sprites, self.height)
+        start_enemy1.scale = 0.05
+        start_enemy1.center_x = start_platform1.center_x
+        start_enemy1.center_y = start_platform1.center_y + 13
+        self.enemy_sprites.append(start_enemy1)
 
         self.player = PlayerCharacter()
         self.player.center_x = 55
@@ -263,10 +287,8 @@ class Game(arcade.Window):
         self.draw_background()
         self.platform_sprites.draw()
         self.player_list.draw()
-        self.enemy_list.draw()
+        self.enemy_sprites.draw()
 
-        if self.enemy_list[0].center_x <= 0:
-            self.enemy_list.draw()
 
         #What to draw if the game state in on menu
         if self.state == State.MAIN_MENU:
@@ -343,11 +365,8 @@ class Game(arcade.Window):
         """
 
         self.player_list.update_animation()
-        self.enemy_list.update()
 
         if self.state == State.PLAYING:
-            
-            self.enemy_list[0].change_x = -1.5
 
             if self.jump:
                 self.player.jump()
@@ -362,6 +381,7 @@ class Game(arcade.Window):
                 self.player.top = self.height
 
             new_platform = None
+            new_enemy = None
 
             for plat in self.platform_sprites:
                 if plat.right <= 0:
@@ -371,6 +391,17 @@ class Game(arcade.Window):
  
             if new_platform:
                 self.platform_sprites.append(new_platform)
+ 
+            for enemy in self.enemy_sprites:
+                if enemy.right <= 0:
+                    enemy.kill()
+                
+                elif len(self.enemy_sprites) == 1 and enemy.right <= random.randrange(self.width // 2, self.width // 2 + 15):
+                    new_enemy = Enemy.enemy_random_generator(self.sprites, self.height)
+                    new_enemy.center_y = self.platform_sprites[0].center_y + 13
+
+            if new_enemy:
+                self.enemy_sprites.append(new_enemy)
 
 
             if self.player.center_x >= self.platform_sprites[0].center_x and not self.platform_sprites[0].scored:
@@ -397,7 +428,7 @@ class Game(arcade.Window):
             self.player_list.update()
             self.player_list.update_animation()
             self.platform_sprites.update()
-            self.enemy_list.update()
+            self.enemy_sprites.update()
 
 
     
