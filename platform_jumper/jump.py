@@ -164,7 +164,7 @@ class Platform(arcade.Sprite):
     def random_platform_generator(cls, sprites, height):
 
         new_platform = cls(platform)
-        new_platform.center_y = random.randrange(150, 300, 10)
+        new_platform.center_y = random.randrange(100, SCREEN_HEIGHT//2, 10)
         new_platform.left = 250
         new_platform.width = random.randrange(100, 300)
         new_platform.height = 25
