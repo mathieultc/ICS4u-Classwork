@@ -1,6 +1,7 @@
 import arcade
 import random
 import os
+import json
 
 SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 500
@@ -224,7 +225,7 @@ class Game(arcade.Window):
                       'highscore': arcade.load_texture(highscore)}
 
         self.double_jump = False
-        self.score_list = []
+        self.sorted_list = []
         self.highscore = None
         self.display_score = None
 
@@ -449,10 +450,20 @@ class Game(arcade.Window):
 
         if self.state == State.GAME_OVER:
             self.player.update()
-            self.highscore = self.score
 
-        if self.display_score:
             self.scoreboard()
+
+            with open("score.json", "r") as f:
+                data = json.load(f)
+    
+            data[f"user {len(data) + 1}"] = self.score
+
+            with open("score.json", 'w') as f:
+                json.dump(data, f)
+
+
+
+
             
                  
 def main():
