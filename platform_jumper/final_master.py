@@ -1,7 +1,3 @@
-
-   
-
-   
 import arcade
 import random
 import os
@@ -90,14 +86,6 @@ class PlayerCharacter(arcade.Sprite):
         self.dead = False
 
         # Track out state
-     
-
-        # Adjust the collision box. Default includes too much empty space
-        # side-to-side. Box is centered at sprite center, (0, 0)
-
-        # --- Load Textures ---
-
-        # Images from Kenney.nl's Asset Pack 3
         main_path = ":resources:images/animated_characters/male_person/malePerson"
    
         # Load textures for idle standing
