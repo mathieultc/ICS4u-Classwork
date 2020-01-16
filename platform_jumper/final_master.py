@@ -1,9 +1,22 @@
 
+   
 
-#Import all the important libraries that will be used throughout the program
+   
 import arcade
 import random
 import os
+
+SCREEN_WIDTH = 500
+SCREEN_HEIGHT = 500
+
+CHARACTER_SCALING = 0.5
+
+MOVEMENT_SPEED = 5
+UPDATES_PER_FRAME = 7
+
+# Constants used to track if the player is facing left or right
+RIGHT_FACING = 0
+LEFT_FACING = 1
 
 class State():
     '''
@@ -15,15 +28,17 @@ class State():
 
 
 
-
 # Image of the base floor
-ground = "Objects" + os.sep + "sprites" + os.sep + "base.png"
 # List of different background images that are chosen randomly by the random function
 background = ["Objects" + os.sep + "sprites" + os.sep + "officebackground2.jpg"
                ,"Objects" + os.sep + "sprites" + os.sep + "cloudsky.jpg"]
 platform = "Objects" + os.sep + "sprites" + os.sep + "platform2.png"
 
 player = "Objects" + os.sep + "sprites" + os.sep + "officeguy.png"
+
+enemy = "Objects" + os.sep + "sprites" + os.sep + "obstacle.png"
+
+
 
 # Start screen and game over images
 play = "Objects" + os.sep + "sprites" + os.sep + "play.png"
@@ -32,6 +47,7 @@ ready_message = "Objects" + os.sep + "sprites" + os.sep + "Readymessage.png"
 volume = "Objects" + os.sep + "sprites" + os.sep + "soundup.png"
 highscore = "Objects" + os.sep + "sprites" + os.sep + "highscore.png"
 gameover = "Objects" + os.sep + "sprites" + os.sep + "gameover2.png"
+
 
 
 # Images for the different numbers used in scoring
@@ -49,22 +65,73 @@ SCORE = {
 
 
 
-# Strength of gravity
+def load_texture_pair(filename):
+    """
+    Load a texture pair, with the second being a mirror image.
+    """
+    return [
+        arcade.load_texture(filename, scale=CHARACTER_SCALING),
+        arcade.load_texture(filename, scale=CHARACTER_SCALING, mirrored=True)
+    ]
+
 Gravity = 2
 
-class Player (arcade.AnimatedTimeSprite):
+class PlayerCharacter(arcade.Sprite):
+    def __init__(self):
 
+        # Set up parent class
+        super().__init__()
 
-    def __init__(self, center_x, center_y, death_height):
-        super().__init__(center_x=center_x, center_y=center_y)
+        # Default to face-right
+        self.character_face_direction = RIGHT_FACING
+
+        # Used for flipping between image sequences
+        self.cur_texture = 0
         self.score = 0
-        self.textures = [arcade.load_texture(player, 0, 0, 0, 0, False, False, 0.05)]
         self.vel = 0
-        self.death_height = death_height
         self.dead = False
 
+        # Track out state
+     
 
-    def update(self,dt=0):
+        # Adjust the collision box. Default includes too much empty space
+        # side-to-side. Box is centered at sprite center, (0, 0)
+
+        # --- Load Textures ---
+
+        # Images from Kenney.nl's Asset Pack 3
+        main_path = ":resources:images/animated_characters/male_person/malePerson"
+   
+        # Load textures for idle standing
+        self.idle_texture_pair = load_texture_pair(f"{main_path}_idle.png")
+
+        # Load textures for walking
+        self.walk_textures = []
+        for i in range(8):
+            texture = load_texture_pair(f"{main_path}_walk{i}.png")
+            self.walk_textures.append(texture)
+
+        self.jump_texture = load_texture_pair(f"{main_path}_jump.png")
+
+    def update_animation(self, delta_time: float = 1/60):
+
+        # Figure out if we need to flip face left or right
+        if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
+            self.character_face_direction = LEFT_FACING
+        if self.change_x > 0 and self.character_face_direction == LEFT_FACING:
+            self.character_face_direction = RIGHT_FACING
+        
+       
+            
+        # Idle animation
+        if self.change_x == 0 and self.change_y == 0:
+        # Walking animation
+            self.cur_texture += 1
+            if self.cur_texture > 7 * UPDATES_PER_FRAME:
+                self.cur_texture = 0
+            self.texture = self.walk_textures[self.cur_texture // UPDATES_PER_FRAME][self.character_face_direction]
+
+
         if self.dead:
             self.angle = 90
             if self.center_y > self.death_height + self.height//2:
@@ -75,10 +142,11 @@ class Player (arcade.AnimatedTimeSprite):
             self.center_y += 2
             # self.vel initially set to 0
             self.vel -= 2
+            self.texture = self.jump_texture[0]
 
-    
         else:
-            self.center_y -= Gravity
+            self.center_y -= 2
+
 
     # How many pixels per jump
     def jump(self):
@@ -87,27 +155,51 @@ class Player (arcade.AnimatedTimeSprite):
     def die(self):
         self.dead = True
 
-
 class Platform(arcade.Sprite):
 
     def __init__(self, image):
        
         super().__init__(image)
         # speed
-        self.horizontal_speed = -3
+        self.horizontal_speed = -3.5
         self.scored = False
+        self.y_position = None
 
     @classmethod
     def random_platform_generator(cls, sprites, height):
 
         new_platform = cls(platform)
-        new_platform.center_y = random.randrange(150, 300, 10)
+        new_platform.center_y = random.randrange(150, SCREEN_HEIGHT//2, 10)
         new_platform.left = 250
-        new_platform.width = random.randrange(100, 300)
+        new_platform.width = random.randrange(200, 300)
         new_platform.height = 25
 
 
         return new_platform
+
+    def update(self):
+        self.center_x += self.horizontal_speed
+        
+
+class Enemy(arcade.Sprite):
+
+    def __init__(self, image):
+        super().__init__(image)
+
+        self.horizontal_speed = -3.5
+
+
+    @classmethod
+    def enemy_random_generator(cls, sprites, height):
+  
+        new_enemy = cls(enemy)
+        new_enemy.center_y = height
+        new_enemy.left = 400
+        new_enemy.scale = 0.2
+        new_enemy.width = 25
+
+
+        return new_enemy
 
     def update(self):
         self.center_x += self.horizontal_speed
@@ -124,6 +216,7 @@ class Game(arcade.Window):
         self.player_list = None
         self.sprites = None
         self.platform_sprites = None
+        self.enemy_sprites = None
         self.player = None
         # Background texture
 
@@ -145,6 +238,12 @@ class Game(arcade.Window):
                       'play': arcade.load_texture(play),
                       'highscore': arcade.load_texture(highscore)}
 
+        self.double_jump = False
+        self.score_list = []
+        self.highscore = None
+        self.display_score = None
+
+
     def setup(self):
         self.highscore = None
         self.score = 0
@@ -152,17 +251,30 @@ class Game(arcade.Window):
         self.background = arcade.load_texture(random.choice(background))
         self.platform_sprites = arcade.SpriteList()
         self.player_list = arcade.SpriteList()
+        self.enemy_sprites = arcade.SpriteList()
     
         self.sprites = dict()
         self.sprites['background'] = self.background
 
         start_platform1 = Platform.random_platform_generator(self.sprites, self.height)
         self.platform_sprites.append(start_platform1)
-        self.player = Player(55, self.height//2, 200)
+       
+        start_enemy1 = Enemy.enemy_random_generator(self.sprites, start_platform1.center_y + 20)
+        start_enemy1.scale = 0.2
+        start_enemy1.center_x = start_platform1.center_x
+
+        self.enemy_sprites.append(start_enemy1)
+
+        self.player = PlayerCharacter()
+        self.player.center_x = 55
+        self.player.center_y = SCREEN_HEIGHT//2 + 250
+        self.player.scale = 0.8
+
 
         self.player_list.append(self.player)
 
 
+    
     def draw_background(self):
 
         #Function that loads the texture for the background
@@ -186,6 +298,7 @@ class Game(arcade.Window):
         self.draw_background()
         self.platform_sprites.draw()
         self.player_list.draw()
+        self.enemy_sprites.draw()
 
 
         #What to draw if the game state in on menu
@@ -219,11 +332,14 @@ class Game(arcade.Window):
             # If game state is back to playing , just change the state and return
             self.state = State.PLAYING
             
-        if key == arcade.key.SPACE:
+        if key == arcade.key.SPACE and self.double_jump:
             #If Space bar is pressed, self.jump is set to true and will aloow the player to jump
             self.jump = True
-           
 
+        if key == arcade.key.SPACE and self.state == State.GAME_OVER:
+            self.display_score = True
+
+                
     def on_mouse_press(self, x, y, button, modifiers):
         #Function for the restart button if game is gameover. If the coordinates of the mouse press are within the coordinates of the image it will update the game
         #state and call setup again which is going to draw all the images again.
@@ -254,6 +370,7 @@ class Game(arcade.Window):
             center += 24
 
 
+
     def on_update(self, delta_time):
 
         """
@@ -267,6 +384,9 @@ class Game(arcade.Window):
             if self.jump:
                 self.player.jump()
                 self.jump = False
+
+            
+                self.player.center_y -= 2
             
 
             if self.player.center_y <= 0 :
@@ -276,9 +396,8 @@ class Game(arcade.Window):
             if self.player.top > self.height:
                 self.player.top = self.height
 
-
-
             new_platform = None
+            new_enemy = None
 
             for plat in self.platform_sprites:
                 if plat.right <= 0:
@@ -288,6 +407,17 @@ class Game(arcade.Window):
  
             if new_platform:
                 self.platform_sprites.append(new_platform)
+ 
+            for enemy in self.enemy_sprites:
+                if enemy.right <= 0:
+                    enemy.kill()
+                
+                elif len(self.enemy_sprites) == 1 and enemy.right <= random.randrange(self.width // 2, self.width // 2 +1):
+                    new_enemy = Enemy.enemy_random_generator(self.sprites, self.platform_sprites[0].center_y + 20)
+              
+
+            if new_enemy:
+                self.enemy_sprites.append(new_enemy)
 
 
             if self.player.center_x >= self.platform_sprites[0].center_x and not self.platform_sprites[0].scored:
@@ -295,39 +425,60 @@ class Game(arcade.Window):
                 self.platform_sprites[0].scored = True
                 print(self.score)
 
-            hit = arcade.check_for_collision_with_list(self.player, self.platform_sprites)
+            hit = arcade.check_for_collision_with_list(self.player, self.enemy_sprites)
             
+            
+            #checking player collision with enemy
+            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y - self.player.height//2 >= self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y - self.player.height//2 <= self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
+                self.state = State.GAME_OVER
 
-            if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2 and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
+            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y + self.player.height//2 >= self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y + self.player.height//2 <= self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
+                self.state = State.GAME_OVER
+
+            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y  >= self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y <= self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
+                self.state = State.GAME_OVER
+
+            
+                
+            #checking when double jump is used up
+            if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
+                self.double_jump = True
+         
+            if self.player.center_y > self.platform_sprites[0].center_y + 120:
+                self.double_jump = False
+            
+            if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2 :
                 self.player.center_y = self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 + self.player.height//2
                 self.player.angle = 0
 
-            elif self.player.center_y + self.player.height//2 >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_y <= self.platform_sprites[0].center_y and self.player.center_x >= self.platform_sprites[0].center_x -self.platform_sprites[0].width//2 and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2:
+            if self.player.center_y + self.player.height//2 >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_y <= self.platform_sprites[0].center_y and self.player.center_x > self.platform_sprites[0].center_x - self.platform_sprites[0].width//2 and self.player.center_x < self.platform_sprites[0].center_x + self.platform_sprites[0].width//2:
                 self.state = State.GAME_OVER
 
 
             # This calls update() method on each object in the SpriteList
-            self.player.update(delta_time)
             self.player_list.update()
+            self.player_list.update_animation()
             self.platform_sprites.update()
+            self.enemy_sprites.update()
 
 
-        
-
-        elif self.state == State.GAME_OVER:
+        if self.state == State.GAME_OVER:
             self.player.update()
+            self.highscore = self.score
 
+        if self.display_score:
             self.scoreboard()
+            for _ in range(1):
+                print(self.highscore)
+            
+
+       
+       
 
 def main():
-    game = Game(500, 500)
+    game = Game(SCREEN_WIDTH, SCREEN_WIDTH)
     game.setup()
     arcade.run()
 
-
 if __name__ == "__main__":
     main()
-
-'''
-sprites['base'].height + min_height, height - gap_size - min_height)
-'''

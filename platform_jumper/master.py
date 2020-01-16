@@ -34,7 +34,9 @@ platform = "Objects" + os.sep + "sprites" + os.sep + "platform2.png"
 
 player = "Objects" + os.sep + "sprites" + os.sep + "officeguy.png"
 
-enemy = "Objects" + os.sep + "sprites" + os.sep + "enemy.png"
+enemy = "Objects" + os.sep + "sprites" + os.sep + "obstacle.png"
+
+
 
 # Start screen and game over images
 play = "Objects" + os.sep + "sprites" + os.sep + "play.png"
@@ -159,6 +161,7 @@ class Platform(arcade.Sprite):
         # speed
         self.horizontal_speed = -3
         self.scored = False
+        self.y_position = None
 
     @classmethod
     def random_platform_generator(cls, sprites, height):
@@ -174,6 +177,7 @@ class Platform(arcade.Sprite):
 
     def update(self):
         self.center_x += self.horizontal_speed
+        
 
 class Enemy(arcade.Sprite):
 
@@ -185,10 +189,12 @@ class Enemy(arcade.Sprite):
 
     @classmethod
     def enemy_random_generator(cls, sprites, height):
-
+  
         new_enemy = cls(enemy)
+        new_enemy.center_y = random.randrange(100, SCREEN_HEIGHT//2, 10)
         new_enemy.left = 250
-        new_enemy.scale = 0.05
+        new_enemy.scale = 0.3
+
 
         return new_enemy
 
@@ -249,9 +255,9 @@ class Game(arcade.Window):
         self.platform_sprites.append(start_platform1)
        
         start_enemy1 = Enemy.enemy_random_generator(self.sprites, self.height)
-        start_enemy1.scale = 0.05
+        start_enemy1.scale = 0.3
         start_enemy1.center_x = start_platform1.center_x
-        start_enemy1.center_y = start_platform1.center_y + 13
+        start_enemy1.center_y = start_platform1.center_y + 20
         self.enemy_sprites.append(start_enemy1)
 
         self.player = PlayerCharacter()
@@ -396,9 +402,9 @@ class Game(arcade.Window):
                 if enemy.right <= 0:
                     enemy.kill()
                 
-                elif len(self.enemy_sprites) == 1 and enemy.right <= random.randrange(self.width // 2, self.width // 2 + 15):
+                elif len(self.enemy_sprites) == 1 and enemy.right <= random.randrange(self.width // 2, self.width // 2 +1):
                     new_enemy = Enemy.enemy_random_generator(self.sprites, self.height)
-                    new_enemy.center_y = self.platform_sprites[0].center_y + 13
+              
 
             if new_enemy:
                 self.enemy_sprites.append(new_enemy)
@@ -409,7 +415,12 @@ class Game(arcade.Window):
                 self.platform_sprites[0].scored = True
                 print(self.score)
 
-            hit = arcade.check_for_collision_with_list(self.player, self.platform_sprites)
+            hit = arcade.check_for_collision_with_list(self.player, self.enemy_sprites)
+            
+            if self.player.center_x <= self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x >= self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y - self.player.height//2 >= self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y - self.player.height//2 <= self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
+                self.state = State.GAME_OVER
+                
+
             if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
                 self.double_jump = True
 
