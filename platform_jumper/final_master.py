@@ -9,7 +9,7 @@ import os
 SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 500
 
-CHARACTER_SCALING = 0.5
+CHARACTER_SCALING = 0.4
 
 MOVEMENT_SPEED = 5
 UPDATES_PER_FRAME = 7
@@ -25,8 +25,6 @@ class State():
     MAIN_MENU = 0
     PLAYING = 1
     GAME_OVER = 2
-
-
 
 # Image of the base floor
 # List of different background images that are chosen randomly by the random function
@@ -121,7 +119,6 @@ class PlayerCharacter(arcade.Sprite):
         if self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
         
-       
             
         # Idle animation
         if self.change_x == 0 and self.change_y == 0:
@@ -385,10 +382,8 @@ class Game(arcade.Window):
                 self.player.jump()
                 self.jump = False
 
-            
                 self.player.center_y -= 2
             
-
             if self.player.center_y <= 0 :
                 
                 self.state = State.GAME_OVER
@@ -429,22 +424,24 @@ class Game(arcade.Window):
             
             
             #checking player collision with enemy
-            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y - self.player.height//2 >= self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y - self.player.height//2 <= self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
+            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y - self.player.height//2 > self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y - self.player.height//2 < self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
                 self.state = State.GAME_OVER
 
-            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y + self.player.height//2 >= self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y + self.player.height//2 <= self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
+            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y + self.player.height//2 > self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y + self.player.height//2 < self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
                 self.state = State.GAME_OVER
 
-            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y  >= self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y <= self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
+            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y  > self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y < self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
                 self.state = State.GAME_OVER
 
             
-                
             #checking when double jump is used up
             if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
                 self.double_jump = True
          
             if self.player.center_y > self.platform_sprites[0].center_y + 120:
+                self.double_jump = False
+
+            if self.player.center_y < self.platform_sprites[0].center_y - 100:
                 self.double_jump = False
             
             if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2 :
@@ -470,7 +467,6 @@ class Game(arcade.Window):
             self.scoreboard()
             
                  
-
 def main():
     game = Game(SCREEN_WIDTH, SCREEN_WIDTH)
     game.setup()
