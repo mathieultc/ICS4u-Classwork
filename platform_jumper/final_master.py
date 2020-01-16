@@ -468,12 +468,8 @@ class Game(arcade.Window):
 
         if self.display_score:
             self.scoreboard()
-            for _ in range(1):
-                print(self.highscore)
             
-
-       
-       
+                 
 
 def main():
     game = Game(SCREEN_WIDTH, SCREEN_WIDTH)
