@@ -85,6 +85,7 @@ class PlayerCharacter(arcade.Sprite):
         self.score = 0
         self.vel = 0
         self.dead = False
+        self.gravity_on = False
 
         # Track out state
         main_path = ":resources:images/animated_characters/male_person/malePerson"
@@ -130,7 +131,7 @@ class PlayerCharacter(arcade.Sprite):
             self.vel -= 2
             self.texture = self.jump_texture[0]
 
-        else:
+        elif self.vel == 0 and self.gravity_on == True:
             self.center_y -= 2
 
 
@@ -147,7 +148,7 @@ class Platform(arcade.Sprite):
        
         super().__init__(image)
         # speed
-        self.horizontal_speed = -3.5
+        self.horizontal_speed = -4
         self.scored = False
         self.y_position = None
 
@@ -157,7 +158,7 @@ class Platform(arcade.Sprite):
         new_platform = cls(platform)
         new_platform.center_y = random.randrange(150, SCREEN_HEIGHT//2, 10)
         new_platform.left = 250
-        new_platform.width = random.randrange(200, 300)
+        new_platform.width = random.randrange(180, 250)
         new_platform.height = 25
 
 
@@ -166,29 +167,6 @@ class Platform(arcade.Sprite):
     def update(self):
         self.center_x += self.horizontal_speed
         
-
-class Enemy(arcade.Sprite):
-
-    def __init__(self, image):
-        super().__init__(image)
-
-        self.horizontal_speed = -3.5
-
-
-    @classmethod
-    def enemy_random_generator(cls, sprites, height):
-  
-        new_enemy = cls(enemy)
-        new_enemy.center_y = height
-        new_enemy.left = 400
-        new_enemy.scale = 0.2
-        new_enemy.width = 25
-
-
-        return new_enemy
-
-    def update(self):
-        self.center_x += self.horizontal_speed
 
 class Game(arcade.Window):
 
@@ -202,7 +180,7 @@ class Game(arcade.Window):
         self.player_list = None
         self.sprites = None
         self.platform_sprites = None
-        self.enemy_sprites = None
+        self.enemy_sprites = arcade.SpriteList()
         self.player = None
         # Background texture
 
@@ -229,6 +207,12 @@ class Game(arcade.Window):
         self.highscore = None
         self.display_score = None
 
+        for _ in range(100):
+            self.sprite1 = arcade.Sprite()
+            self.sprite1.texture = arcade.load_texture(file_name=enemy, scale=0.2)
+            self.sprite1.left = 400
+            self.sprite1.center_y = random.randrange(150, SCREEN_HEIGHT//2+20)
+            self.enemy_sprites.append(self.sprite1)
 
     def setup(self):
         self.highscore = None
@@ -237,20 +221,13 @@ class Game(arcade.Window):
         self.background = arcade.load_texture(random.choice(background))
         self.platform_sprites = arcade.SpriteList()
         self.player_list = arcade.SpriteList()
-        self.enemy_sprites = arcade.SpriteList()
     
         self.sprites = dict()
         self.sprites['background'] = self.background
 
         start_platform1 = Platform.random_platform_generator(self.sprites, self.height)
         self.platform_sprites.append(start_platform1)
-       
-        start_enemy1 = Enemy.enemy_random_generator(self.sprites, start_platform1.center_y + 20)
-        start_enemy1.scale = 0.2
-        start_enemy1.center_x = start_platform1.center_x
-
-        self.enemy_sprites.append(start_enemy1)
-
+      
         self.player = PlayerCharacter()
         self.player.center_x = 55
         self.player.center_y = SCREEN_HEIGHT//2 + 250
@@ -259,8 +236,19 @@ class Game(arcade.Window):
 
         self.player_list.append(self.player)
 
+    def draw_enemy_sprites(self, index: int):
+        n = len(self.enemy_sprites)
 
-    
+        if index > n:
+            return True
+
+        elif index < n:
+            self.enemy_sprites[index].change_x = -4
+            self.enemy_sprites[index].draw()
+
+            if self.enemy_sprites[index].center_x <= 10:
+                return self.draw_enemy_sprites(index+1)
+
     def draw_background(self):
 
         #Function that loads the texture for the background
@@ -276,7 +264,6 @@ class Game(arcade.Window):
 
     def on_draw(self):
       
-
         # Start rendering and draw all the objects
         arcade.start_render()
 
@@ -284,7 +271,8 @@ class Game(arcade.Window):
         self.draw_background()
         self.platform_sprites.draw()
         self.player_list.draw()
-        self.enemy_sprites.draw()
+        
+        self.draw_enemy_sprites(0)
 
 
         #What to draw if the game state in on menu
@@ -355,7 +343,19 @@ class Game(arcade.Window):
             self.score_board.append(arcade.Sprite(SCORE[num], 1, center_x= center , center_y=440))
             center += 24
 
+    def generate_platform(self):
+        new_platform = None
 
+
+        for plat in self.platform_sprites:
+            if plat.right <= 0:
+                plat.kill()
+            elif len(self.platform_sprites) == 1 and plat.right <= random.randrange(self.width // 2, self.width // 2 + 15):
+                new_platform = Platform.random_platform_generator(self.sprites, self.height)
+
+        if new_platform:
+            self.platform_sprites.append(new_platform)
+ 
 
     def on_update(self, delta_time):
 
@@ -366,6 +366,9 @@ class Game(arcade.Window):
         self.player_list.update_animation()
 
         if self.state == State.PLAYING:
+            self.generate_platform()
+
+            self.player.gravity_on = True
 
             if self.jump:
                 self.player.jump()
@@ -380,49 +383,18 @@ class Game(arcade.Window):
             if self.player.top > self.height:
                 self.player.top = self.height
 
-            new_platform = None
-            new_enemy = None
-
-            for plat in self.platform_sprites:
-                if plat.right <= 0:
-                    plat.kill()
-                elif len(self.platform_sprites) == 1 and plat.right <= random.randrange(self.width // 2, self.width // 2 + 15):
-                    new_platform = Platform.random_platform_generator(self.sprites, self.height)
- 
-            if new_platform:
-                self.platform_sprites.append(new_platform)
- 
-            for enemy in self.enemy_sprites:
-                if enemy.right <= 0:
-                    enemy.kill()
-                
-                elif len(self.enemy_sprites) == 1 and enemy.right <= random.randrange(self.width // 2, self.width // 2 +1):
-                    new_enemy = Enemy.enemy_random_generator(self.sprites, self.platform_sprites[0].center_y + 20)
-              
-
-            if new_enemy:
-                self.enemy_sprites.append(new_enemy)
-
-
+           
             if self.player.center_x >= self.platform_sprites[0].center_x and not self.platform_sprites[0].scored:
                 self.score += 1
                 self.platform_sprites[0].scored = True
                 print(self.score)
 
             hit = arcade.check_for_collision_with_list(self.player, self.enemy_sprites)
-            
-            
-            #checking player collision with enemy
-            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y - self.player.height//2 > self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y - self.player.height//2 < self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
+            if any(hit):
                 self.state = State.GAME_OVER
 
-            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y + self.player.height//2 > self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y + self.player.height//2 < self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
-                self.state = State.GAME_OVER
-
-            if self.player.center_x < self.enemy_sprites[0].center_x + self.enemy_sprites[0].width//2 and self.player.center_x > self.enemy_sprites[0].center_x - self.enemy_sprites[0].width//2 and self.player.center_y  > self.enemy_sprites[0].center_y -self.enemy_sprites[0].height//2 and self.player.center_y < self.enemy_sprites[0].center_y + self.enemy_sprites[0].height//2:
-                self.state = State.GAME_OVER
-
-            
+           
+    
             #checking when double jump is used up
             if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
                 self.double_jump = True
@@ -450,19 +422,9 @@ class Game(arcade.Window):
 
         if self.state == State.GAME_OVER:
             self.player.update()
+            self.player.gravity_on = False
 
             self.scoreboard()
-
-            with open("score.json", "r") as f:
-                data = json.load(f)
-    
-            data[f"user {len(data) + 1}"] = self.score
-
-            with open("score.json", 'w') as f:
-                json.dump(data, f)
-
-
-
 
             
                  
