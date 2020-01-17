@@ -59,6 +59,17 @@ SCORE = {
     '9': 'Objects' + os.sep + 'sprites' + os.sep + '9.png',}
 
 
+def bubblesort(numbers):
+    n = len(numbers)
+
+    for i in range(n):
+        for j in range(n - i - 1):
+            if numbers[j] < numbers[j + 1]:
+                numbers[j], numbers[j+1] = numbers[j+1], numbers[j]
+
+    return numbers
+
+
 
 def load_texture_pair(filename):
     """
@@ -205,13 +216,14 @@ class Game(arcade.Window):
         self.double_jump = False
         self.sorted_list = []
         self.highscore = None
-        self.display_score = None
+        self.stored_score = False
+        self.sorted_score = False
 
         for _ in range(100):
             self.sprite1 = arcade.Sprite()
             self.sprite1.texture = arcade.load_texture(file_name=enemy, scale=0.2)
             self.sprite1.left = 400
-            self.sprite1.center_y = random.randrange(150, SCREEN_HEIGHT//2+20)
+            self.sprite1.center_y = random.randrange(200, SCREEN_HEIGHT//2+20)
             self.enemy_sprites.append(self.sprite1)
 
     def setup(self):
@@ -274,7 +286,6 @@ class Game(arcade.Window):
         
         self.draw_enemy_sprites(0)
 
-
         #What to draw if the game state in on menu
         if self.state == State.MAIN_MENU:
             # Show the main menu
@@ -283,7 +294,6 @@ class Game(arcade.Window):
             texture = self.menus['ready']
             arcade.draw_texture_rectangle(self.width//2,self.height//2 +100,250,200,texture,0)
      
-
 
         elif self.state == State.GAME_OVER:
             # Draw the game over menu if the player lost and the restart play button
@@ -310,13 +320,9 @@ class Game(arcade.Window):
             #If Space bar is pressed, self.jump is set to true and will aloow the player to jump
             self.jump = True
 
-        if key == arcade.key.SPACE and self.state == State.GAME_OVER:
-            self.display_score = True
-
                 
     def on_mouse_press(self, x, y, button, modifiers):
-        #Function for the restart button if game is gameover. If the coordinates of the mouse press are within the coordinates of the image it will update the game
-        #state and call setup again which is going to draw all the images again.
+       
 
         if self.state == State.GAME_OVER:
             texture = self.menus['play']
@@ -326,6 +332,8 @@ class Game(arcade.Window):
                 if y_position - texture.height//2 <= y <= y_position + texture.height//2:
                     self.setup()
                     self.state = State.MAIN_MENU
+                    self.stored_score = False
+                    self.sorted_list = []
 
 
     def scoreboard(self):
@@ -333,19 +341,39 @@ class Game(arcade.Window):
         Function created to calculate the score by using a for loop
         '''
 
-        #This is the initial x coordinate of the score on the screen
         center = 230
         self.score_board = arcade.SpriteList()
 
-        #Down below in the on_update function, the self.score is going to be updated.
-        #By using a for each loop the value num is used an index to find the right score image from the list SCORE
+       
         for num in str(self.score):
             self.score_board.append(arcade.Sprite(SCORE[num], 1, center_x= center , center_y=440))
             center += 24
 
+    def store_score(self, score: int):
+        with open("score.json", "r") as f:
+            data = json.load(f)
+
+        data[f"user {len(data) + 1}"] = score
+        
+        with open("score.json", "w") as f:
+            json.dump(data, f)
+        
+        self.stored_score = True
+
+    def display_score(self):
+
+        with open("score.json", "r") as f:
+            data = json.load(f)
+
+        for values in data.values():
+            self.sorted_list.append(values)
+            bubblesort(self.sorted_list)
+    
+        for i in range(len(self.sorted_list)):
+            print(f" {i + 1}. {self.sorted_list[i]}")
+
     def generate_platform(self):
         new_platform = None
-
 
         for plat in self.platform_sprites:
             if plat.right <= 0:
@@ -355,7 +383,7 @@ class Game(arcade.Window):
 
         if new_platform:
             self.platform_sprites.append(new_platform)
- 
+
 
     def on_update(self, delta_time):
 
@@ -387,14 +415,11 @@ class Game(arcade.Window):
             if self.player.center_x >= self.platform_sprites[0].center_x and not self.platform_sprites[0].scored:
                 self.score += 1
                 self.platform_sprites[0].scored = True
-                print(self.score)
 
             hit = arcade.check_for_collision_with_list(self.player, self.enemy_sprites)
             if any(hit):
                 self.state = State.GAME_OVER
 
-           
-    
             #checking when double jump is used up
             if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2  and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2  and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2  and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
                 self.double_jump = True
@@ -423,11 +448,14 @@ class Game(arcade.Window):
         if self.state == State.GAME_OVER:
             self.player.update()
             self.player.gravity_on = False
-
             self.scoreboard()
 
+            if self.stored_score == False:
+
+                self.store_score(self.score)
+                self.display_score()
             
-                 
+                          
 def main():
     game = Game(SCREEN_WIDTH, SCREEN_WIDTH)
     game.setup()
