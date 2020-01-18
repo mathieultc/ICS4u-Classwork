@@ -518,7 +518,7 @@ class Game(arcade.Window):
             self.player.update()
             self.player.gravity_on = False
             self.scoreboard()
-
+            
             if self.stored_score is False:
                 self.store_score(self.score)
                 self.display_score()
