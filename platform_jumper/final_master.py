@@ -368,6 +368,7 @@ class Game(arcade.Window):
    # getter for player rank
     def get_player_rank(self) -> int:
         scores_list = []
+        self._sorted_list = []
         
         with open("score.json", "r") as f:
             data = json.load(f)
@@ -385,7 +386,7 @@ class Game(arcade.Window):
         return self._player_rank
 
     def setup(self) -> None:
-        """Sets up sprites for the game"""
+        """Sets up sprites and variables for the game"""
 
         self._score = 0
         self._score_board = arcade.SpriteList()
@@ -393,7 +394,7 @@ class Game(arcade.Window):
         self._background = arcade.load_texture(random.choice(background))
         self._platform_sprites = arcade.SpriteList()
         self._player_list = arcade.SpriteList()
-
+        # create the first platform you see on sreen
         start_platform1 = Platform.random_platform_generator()
         self._platform_sprites.append(start_platform1)
         self._player = PlayerCharacter()
@@ -541,7 +542,7 @@ class Game(arcade.Window):
             five_best = scores_list
         else:
             five_best = scores_list[:5]
-         
+        # for loop to draw the score on screen
         for score in five_best:
             if len(str(score)) == 1:
                 for num in str(score):
@@ -626,7 +627,7 @@ class Game(arcade.Window):
             self.scoreboard()
             
             if self._stored_score is False:
-                self.store_score(self._score)
+                self.store_score(self.get_score())
                 self.display_score_list()
                 
                 
