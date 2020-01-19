@@ -30,9 +30,7 @@ class State():
 # List of different background images that are chosen randomly by the random
 # function
 
-background = ["Objects" + os.sep + "sprites" + os.sep + "officebackground.jpg",
-              "Objects" + os.sep + "sprites" + os.sep + "cloudsky.jpg"]
-
+background = ["Objects" + os.sep + "sprites" + os.sep + "officebackground.jpg"]
 platform = "Objects" + os.sep + "sprites" + os.sep + "platform2.png"
 player = "Objects" + os.sep + "sprites" + os.sep + "officeguy.png"
 enemy = "Objects" + os.sep + "sprites" + os.sep + "obstacle.png"
@@ -68,6 +66,21 @@ def bubblesort(numbers: List[int]) -> List[int]:
 
     return numbers
 
+def binary_search(lst: List[int], target: int) -> int:
+    start = 0
+    end = len(lst) -1
+
+    while start < end:
+        mid = (start + end)//2
+        
+        if lst[mid] == target:
+            return mid
+        elif lst[mid] < target:
+            end = mid - 1
+        else:
+            start = mid + 1
+
+    return -1
 
 def load_texture_pair(filename: str) -> "SpriteList":
     """
@@ -155,11 +168,11 @@ class PlayerCharacter(arcade.Sprite):
 
     # How many pixels per jump
     def jump(self) -> None:
-        """class method to make the player jump"""
+        """get the player to jump"""
         self.vel = 60
 
     def die(self) -> None:
-        """class method to make the player die"""
+        """instance method to make the player die"""
         self.dead = True
 
 
@@ -271,9 +284,7 @@ class Game(arcade.Window):
         self.sorted_list = []
         self.stored_score = False
         self.sorted_score = False
-        self.user_name = None
-        self.change_user_name = None
-
+        
         # for loop to generate 100 enemy sprites
         for _ in range(100):
             self.sprite1 = arcade.Sprite()
@@ -291,6 +302,7 @@ class Game(arcade.Window):
         self.background = arcade.load_texture(random.choice(background))
         self.platform_sprites = arcade.SpriteList()
         self.player_list = arcade.SpriteList()
+        self.scores_list = []
         self.five_best = []
 
         start_platform1 = Platform.random_platform_generator()
@@ -352,18 +364,22 @@ class Game(arcade.Window):
             # Draw the game over menu if the player lost and the restart play 
             # button
             texture = self.menus['gameover']
-            arcade.draw_texture_rectangle(self.width//2, self.height//2 + 50, 
-                                          200, 100, texture, 0)
+            arcade.draw_texture_rectangle(self.width//2, self.height//2 + 25, 
+                                          100, 100, texture)
             texture = self.menus['play']
             arcade.draw_texture_rectangle(self.width//2, self.height//2 - 50, 
                                           texture.width, texture.height, 
                                           texture, 0)
-
+            arcade.draw_text(f"Congratulations you are number {self.player_rank + 1}", 
+                              10, SCREEN_HEIGHT//2 - 200, arcade.color.BLACK, 25)
+            arcade.draw_text("Top Five", 75, 455, arcade.color.YELLOW_ORANGE, 20)
+            arcade.draw_text("Current Score", SCREEN_WIDTH - 175, 455,
+                              arcade.color.YELLOW_ORANGE, 20 )
             # If statement to compute if there is a new highscore
             self.draw_score_board()
 
     def on_key_press(self, key, key_modifiers) -> None:
-        if key == arcade.key.SPACE and self.state == State.MAIN_MENU:
+        if key == arcade.key.SPACE and self.state == State.MAIN_MENU: 
             # If game state is back to playing , just change the state and 
             # return
             self.state = State.PLAYING
@@ -390,19 +406,18 @@ class Game(arcade.Window):
         '''
         Function created to calculate the score by using a for loop
         '''
-        center = 230
+        center = SCREEN_WIDTH - 105
 
         self.score_board = arcade.SpriteList()
 
         for num in str(self.score):
             self.score_board.append(arcade.Sprite(SCORE[num], 1, 
                                                   center_x=center,
-                                                  center_y=440))
+                                                  center_y=420))
             center += 24
 
     def store_score(self, score: int) -> None:
         """stores the score when game is over
-
         Args:
             score(int): the player's score
         """
@@ -413,26 +428,34 @@ class Game(arcade.Window):
             json.dump(data, f)
         self.stored_score = True
 
-    def display_score(self) -> None:
+    def display_score_list(self) -> None:
         """displays all the score from highest to lowest"""
-
+        
         self.score_list = arcade.SpriteList()
-        x_position = 100
-        y_position = 450
+        x_position = 100  # x coordinate of best scores on the screen
+        y_position = 430  # y coordinate of the best scores on the screen
+        self.scores_list = []
         self.five_best = []
-
+        self.player_rank = 0
+        # calling the json file to load the dictionary of scores
         with open("score.json", "r") as f:
             data = json.load(f)
-
+        # sort all the scores from highest to lowest
         for values in data.values():
             self.sorted_list.append(values)
             bubblesort(self.sorted_list)
-
-        if len(self.sorted_list) < 6:
-            self.five_best = self.sorted_list
+        # remove any repeating scores
+        for num in self.sorted_list:
+            if num not in self.scores_list:
+                self.scores_list.append(num)
+        # get the rank of the player
+        self.player_rank = binary_search(self.scores_list, list(data.values())[-1])
+        # only draw the five best scores
+        if len(self.scores_list) < 6:
+            self.five_best = self.scores_list
         else:
-            self.five_best = self.sorted_list[:5]
-
+            self.five_best = self.scores_list[:5]
+         
         for score in self.five_best:
             if len(str(score)) == 1:
                 for num in str(score):
@@ -451,10 +474,9 @@ class Game(arcade.Window):
                 x_position = 100
 
     def generate_platform(self) -> None:
-        """generate random platform"""
+        """generates random platform"""
 
         new_platform = None
-
         for plat in self.platform_sprites:
             if plat.right <= 0:
                 plat.kill()
@@ -493,7 +515,6 @@ class Game(arcade.Window):
                                                        self.enemy_sprites)
             if any(hit):
                 self.state = State.GAME_OVER
-
             # checking when double jump is used up
             if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2 and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
                 self.double_jump = True
@@ -504,7 +525,6 @@ class Game(arcade.Window):
             # check if the player collides with platform
             if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2 and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
                 self.player.center_y = self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 + self.player.height//2
-                self.player.angle = 0
             # check if the player hits the platform from under
             if self.player.center_y + self.player.height//2 >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_y <= self.platform_sprites[0].center_y and self.player.center_x > self.platform_sprites[0].center_x - self.platform_sprites[0].width//2 and self.player.center_x < self.platform_sprites[0].center_x + self.platform_sprites[0].width//2:
                 self.state = State.GAME_OVER
@@ -513,7 +533,7 @@ class Game(arcade.Window):
             self.player_list.update_animation()
             self.platform_sprites.update()
             self.enemy_sprites.update()
-
+        # if state is game over the player is updated, the gravity is deactivated and the score board is called
         if self.state == State.GAME_OVER:
             self.player.update()
             self.player.gravity_on = False
@@ -521,7 +541,7 @@ class Game(arcade.Window):
             
             if self.stored_score is False:
                 self.store_score(self.score)
-                self.display_score()
+                self.display_score_list()
                 
                 
 def main():
