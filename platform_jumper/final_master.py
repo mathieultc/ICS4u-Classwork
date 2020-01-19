@@ -309,7 +309,6 @@ class Game(arcade.Window):
         self._sorted_list = []
         self._stored_score = False
         self._sorted_score = False
-        
         # for loop to generate 100 enemy sprites
         for _ in range(100):
             self._sprite1 = arcade.Sprite()
@@ -318,6 +317,55 @@ class Game(arcade.Window):
             self._sprite1.center_y = random.randrange(200, SCREEN_HEIGHT//2+20)
             self._enemy_sprites.append(self._sprite1)
 
+    # getter for jump status
+    def get_jump_status(self) -> bool:
+        return self._jump
+
+    # setter for jump status
+    def set_jump_stats(self, value: bool) -> None:
+        self._jump = value
+
+    # getter for score
+    def get_score(self) -> int:
+        return self._score
+
+    # setter for score
+    def set_score(self, value: int) -> None:
+        self._score = value
+
+    # getter for state
+    def get_state(self) -> int:
+        return self._state
+
+    # setter for state
+    def set_state(self, value: int) -> None:
+        self._state = value
+
+    # getter for double jump status
+    def get_double_jump_status(self) -> bool:
+        return self._double_jump
+
+    # setter for double jump status
+    def set_double_jump_status(self, value: bool) -> None:
+        self._double_jump = value
+
+    # getter for stored score status
+    def get_stored_score_status(self) -> bool:
+        return self._stored_score
+
+    # setter for stored score status
+    def set_stored_score_status(self, value: bool) -> None:
+        self._stored_score = value
+
+    # getter for stored score status
+    def get_sorted_score_status(self) -> bool:
+        return self._sorted_score
+
+    # setter for stored score status
+    def set_sorted_score_status(self, value: bool) -> None:
+        self._sorted_score = value
+
+   # getter for player rank
     def get_player_rank(self) -> int:
         scores_list = []
         
