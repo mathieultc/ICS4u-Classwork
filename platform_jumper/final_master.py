@@ -507,6 +507,7 @@ class Game(arcade.Window):
 
     def store_score(self, score: int) -> None:
         """stores the score when game is over
+        
         Args:
             score(int): the player's score
         """
