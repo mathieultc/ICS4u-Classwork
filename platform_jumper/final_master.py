@@ -112,26 +112,26 @@ class PlayerCharacter(arcade.Sprite):
         super().__init__()
 
         # Default to face-right
-        self.character_face_direction = RIGHT_FACING
+        self._character_face_direction = RIGHT_FACING
 
         # Used for flipping between image sequences
-        self.cur_texture = 0
-        self.vel = 0
-        self.dead = False
-        self.gravity_on = False
+        self._cur_texture = 0
+        self._vel = 0
+        self._dead = False
+        self._gravity_on = False
 
         # Track out state
         main_path = ":resources:images/animated_characters/male_person/malePerson"
         # Load textures for idle standing
-        self.idle_texture_pair = load_texture_pair(f"{main_path}_idle.png")
+        self._idle_texture_pair = load_texture_pair(f"{main_path}_idle.png")
 
         # Load textures for walking
-        self.walk_textures = []
+        self._walk_textures = []
         for i in range(8):
             texture = load_texture_pair(f"{main_path}_walk{i}.png")
-            self.walk_textures.append(texture)
+            self._walk_textures.append(texture)
 
-        self.jump_texture = load_texture_pair(f"{main_path}_jump.png")
+        self._jump_texture = load_texture_pair(f"{main_path}_jump.png")
 
     def update_animation(self, delta_time: float = 1/60) -> None:
         """Updates the animation of the player
@@ -140,40 +140,39 @@ class PlayerCharacter(arcade.Sprite):
         """
 
         # Figure out if we need to flip face left or right
-        if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
-            self.character_face_direction = LEFT_FACING
-        if self.change_x > 0 and self.character_face_direction == LEFT_FACING:
-            self.character_face_direction = RIGHT_FACING
+        if self.change_x < 0 and self._character_face_direction == RIGHT_FACING:
+            self._character_face_direction = LEFT_FACING
+        if self.change_x > 0 and self._character_face_direction == LEFT_FACING:
+            self._character_face_direction = RIGHT_FACING
             
         # walking animation
         if self.change_x == 0 and self.change_y == 0:
-            self.cur_texture += 1
-            if self.cur_texture > 7 * FRAME_RATE:
-                self.cur_texture = 0
-            self.texture = self.walk_textures[self.cur_texture // FRAME_RATE][self.character_face_direction]
+            self._cur_texture += 1
+            if self._cur_texture > 7 * FRAME_RATE:
+                self._cur_texture = 0
+            self.texture = self._walk_textures[self._cur_texture // FRAME_RATE][self._character_face_direction]
 
-        if self.dead:
+        if self._dead:
             self.angle = 90
             if self.center_y > self.death_height + self.height//2:
                 self.center_y -= 4
-            return
 
-        if self.vel > 0:
+        if self._vel > 0:
             self.center_y += 2
-            self.vel -= 2
-            self.texture = self.jump_texture[0]
+            self._vel -= 2
+            self.texture = self._jump_texture[0]
 
-        if self.vel == 0 and self.gravity_on is True:
+        if self._vel == 0 and self._gravity_on is True:
             self.center_y -= 2
 
     # How many pixels per jump
     def jump(self) -> None:
         """get the player to jump"""
-        self.vel = 60
+        self._vel = 60
 
     def die(self) -> None:
         """instance method to make the player die"""
-        self.dead = True
+        self._dead = True
 
 
 class Platform(arcade.Sprite):
@@ -190,8 +189,8 @@ class Platform(arcade.Sprite):
             image(sprite): The texture for the platform sprite
         """
         super().__init__(image)
-        self.horizontal_speed = -4
-        self.scored = False
+        self._horizontal_speed = -4
+        self._scored = False
 
     @classmethod
     def random_platform_generator(cls) -> "sprites":
@@ -213,7 +212,7 @@ class Platform(arcade.Sprite):
 
     def update(self) -> None:
         """ Update method to update the x position of the platform"""
-        self.center_x += self.horizontal_speed
+        self.center_x += self._horizontal_speed
 
 
 # Main Game class
@@ -260,72 +259,72 @@ class Game(arcade.Window):
             title(str): the title of the screen
         """
         super().__init__(width, height, title="office guy")
-        self.background = None
-        self.player_list = None
-        self.platform_sprites = None
-        self.enemy_sprites = arcade.SpriteList()
-        self.player = None
+        self._background = None
+        self._player_list = None
+        self._platform_sprites = None
+        self._enemy_sprites = arcade.SpriteList()
+        self._player = None
         # Score texture
-        self.score_board = None
-        self.score_list = None
+        self._score_board = None
+        self._score_list = None
         # A boolean to check if the user pressed space bar
-        self.jump = False
+        self._jump = False
         # initial score
-        self.score = None
+        self._score = None
         # Initial state of the game
-        self.state = State.MAIN_MENU
+        self._state = State.MAIN_MENU
         # The texture for the start and game over screens.
-        self.menus = {'start': arcade.load_texture(ready),
+        self._menus = {'start': arcade.load_texture(ready),
                       'ready': arcade.load_texture(ready_message),
                       'gameover': arcade.load_texture(gameover),
                       'play': arcade.load_texture(play),
                       'highscore': arcade.load_texture(highscore)}
-        self.double_jump = False
-        self.sorted_list = []
-        self.stored_score = False
-        self.sorted_score = False
+        self._double_jump = False
+        self._sorted_list = []
+        self._stored_score = False
+        self._sorted_score = False
         
         # for loop to generate 100 enemy sprites
         for _ in range(100):
-            self.sprite1 = arcade.Sprite()
-            self.sprite1.texture = arcade.load_texture(file_name=enemy, scale=0.2)
-            self.sprite1.left = 400
-            self.sprite1.center_y = random.randrange(200, SCREEN_HEIGHT//2+20)
-            self.enemy_sprites.append(self.sprite1)
+            self._sprite1 = arcade.Sprite()
+            self._sprite1.texture = arcade.load_texture(file_name=enemy, scale=0.2)
+            self._sprite1.left = 400
+            self._sprite1.center_y = random.randrange(200, SCREEN_HEIGHT//2+20)
+            self._enemy_sprites.append(self._sprite1)
 
     def setup(self) -> None:
         """Sets up sprites for the game"""
 
-        self.score = 0
-        self.score_board = arcade.SpriteList()
-        self.score_list = arcade.SpriteList()
-        self.background = arcade.load_texture(random.choice(background))
-        self.platform_sprites = arcade.SpriteList()
-        self.player_list = arcade.SpriteList()
-        self.scores_list = []
-        self.five_best = []
+        self._score = 0
+        self._score_board = arcade.SpriteList()
+        self._score_list = arcade.SpriteList()
+        self._background = arcade.load_texture(random.choice(background))
+        self._platform_sprites = arcade.SpriteList()
+        self._player_list = arcade.SpriteList()
+        self._scores_list = []
+        self._five_best = []
 
         start_platform1 = Platform.random_platform_generator()
-        self.platform_sprites.append(start_platform1)
-        self.player = PlayerCharacter()
-        self.player.center_x = 55
-        self.player.center_y = SCREEN_HEIGHT//2 + 250
-        self.player.scale = 0.8
-        self.player_list.append(self.player)
+        self._platform_sprites.append(start_platform1)
+        self._player = PlayerCharacter()
+        self._player.center_x = 55
+        self._player.center_y = SCREEN_HEIGHT//2 + 250
+        self._player.scale = 0.8
+        self._player_list.append(self._player)
 
     def draw_enemy_sprites(self, index: int) -> "sprite":
         """recursive function to draw sprites from the enemy sprites list"""
 
-        n = len(self.enemy_sprites)
+        n = len(self._enemy_sprites)
 
         if index > n:  # base case
             return True
 
         elif index < n:
-            self.enemy_sprites[index].change_x = -4
-            self.enemy_sprites[index].draw()
+            self._enemy_sprites[index].change_x = -4
+            self._enemy_sprites[index].draw()
 
-            if self.enemy_sprites[index].center_x <= 10:
+            if self._enemy_sprites[index].center_x <= 10:
                 return self.draw_enemy_sprites(index+1)  # recursive step
 
     def draw_background(self) -> None:
@@ -333,12 +332,12 @@ class Game(arcade.Window):
 
         # Function that loads the texture for the background
         arcade.draw_texture_rectangle(self.width // 2, self.height // 2, 500,
-                                      500, self.background, 0)
+                                      500, self._background, 0)
 
     def draw_score_board(self) -> None:
         # function that loads the texture to draw the score
-        self.score_board.draw()
-        self.score_list.draw()
+        self._score_board.draw()
+        self._score_list.draw()
 
     def on_draw(self) -> None:
         """draw function to draw all necessary sprites on the screen"""
@@ -346,31 +345,31 @@ class Game(arcade.Window):
         arcade.start_render()
         # draw background, then pipes on top, then base, then bird.
         self.draw_background()
-        self.platform_sprites.draw()
-        self.player_list.draw()
+        self._platform_sprites.draw()
+        self._player_list.draw()
         # calling recursive function 
         self.draw_enemy_sprites(0)
 
         # What to draw if the game state in on menu
-        if self.state == State.MAIN_MENU:
+        if self._state == State.MAIN_MENU:
             # Show the main menu
-            texture = self.menus['start']
+            texture = self._menus['start']
             arcade.draw_texture_rectangle(self.width//2, self.height//2 + 50, 
                                           250, 50, texture, 0)
-            texture = self.menus['ready']
+            texture = self._menus['ready']
             arcade.draw_texture_rectangle(self.width//2, self.height//2 + 100,
                                           250, 200, texture, 0)
-        elif self.state == State.GAME_OVER:
+        elif self._state == State.GAME_OVER:
             # Draw the game over menu if the player lost and the restart play 
             # button
-            texture = self.menus['gameover']
+            texture = self._menus['gameover']
             arcade.draw_texture_rectangle(self.width//2, self.height//2 + 25, 
                                           100, 100, texture)
-            texture = self.menus['play']
+            texture = self._menus['play']
             arcade.draw_texture_rectangle(self.width//2, self.height//2 - 50, 
                                           texture.width, texture.height, 
                                           texture, 0)
-            arcade.draw_text(f"Congratulations you are number {self.player_rank + 1}", 
+            arcade.draw_text(f"Congratulations you are number {self._player_rank + 1}", 
                               10, SCREEN_HEIGHT//2 - 200, arcade.color.BLACK, 25)
             arcade.draw_text("Top Five", 75, 455, arcade.color.YELLOW_ORANGE, 20)
             arcade.draw_text("Current Score", SCREEN_WIDTH - 175, 455,
@@ -379,39 +378,38 @@ class Game(arcade.Window):
             self.draw_score_board()
 
     def on_key_press(self, key, key_modifiers) -> None:
-        if key == arcade.key.SPACE and self.state == State.MAIN_MENU: 
+        if key == arcade.key.SPACE and self._state == State.MAIN_MENU: 
             # If game state is back to playing , just change the state and 
             # return
-            self.state = State.PLAYING
-        if key == arcade.key.SPACE and self.double_jump:
+            self._state = State.PLAYING
+        if key == arcade.key.SPACE and self._double_jump:
             # If Space bar is pressed, self.jump is set to true and will allow 
             # the player to jump
-            self.jump = True
+            self._jump = True
 
     def on_mouse_press(self, x, y, button, modifiers) -> None:
         # if statement to check whether the user clicks in the required box to 
         # restart game
-        if self.state == State.GAME_OVER:
-            texture = self.menus['play']
+        if self._state == State.GAME_OVER:
+            texture = self._menus['play']
             x_position = self.width//2
             y_position = self.height//2 - 50
             if x_position - texture.width//2 <= x <= x_position + texture.width//2:
                 if y_position - texture.height//2 <= y <= y_position + texture.height//2:
                     self.setup()
-                    self.state = State.MAIN_MENU
-                    self.stored_score = False
-                    self.sorted_list = []
+                    self._state = State.MAIN_MENU
+                    self._stored_score = False
+                    self._sorted_list = []
 
     def scoreboard(self) -> None:
         '''
         Function created to calculate the score by using a for loop
         '''
         center = SCREEN_WIDTH - 105
+        self._score_board = arcade.SpriteList()
 
-        self.score_board = arcade.SpriteList()
-
-        for num in str(self.score):
-            self.score_board.append(arcade.Sprite(SCORE[num], 1, 
+        for num in str(self._score):
+            self._score_board.append(arcade.Sprite(SCORE[num], 1, 
                                                   center_x=center,
                                                   center_y=420))
             center += 24
@@ -426,47 +424,48 @@ class Game(arcade.Window):
         data[f"user {len(data) + 1}"] = score
         with open("score.json", "w") as f:
             json.dump(data, f)
-        self.stored_score = True
+
+        self._stored_score = True
 
     def display_score_list(self) -> None:
         """displays all the score from highest to lowest"""
         
-        self.score_list = arcade.SpriteList()
+        self._score_list = arcade.SpriteList()
         x_position = 100  # x coordinate of best scores on the screen
         y_position = 430  # y coordinate of the best scores on the screen
-        self.scores_list = []
-        self.five_best = []
-        self.player_rank = 0
+        self._scores_list = []
+        self._five_best = []
+        self._player_rank = 0
         # calling the json file to load the dictionary of scores
         with open("score.json", "r") as f:
             data = json.load(f)
         # sort all the scores from highest to lowest
         for values in data.values():
-            self.sorted_list.append(values)
-            bubblesort(self.sorted_list)
+            self._sorted_list.append(values)
+            bubblesort(self._sorted_list)
         # remove any repeating scores
-        for num in self.sorted_list:
-            if num not in self.scores_list:
-                self.scores_list.append(num)
-        # get the rank of the player
-        self.player_rank = binary_search(self.scores_list, list(data.values())[-1])
+        for num in self._sorted_list:
+            if num not in self._scores_list:
+                self._scores_list.append(num)
+        # get the rank of the player by using binary search
+        self._player_rank = binary_search(self._scores_list, list(data.values())[-1])
         # only draw the five best scores
-        if len(self.scores_list) < 6:
-            self.five_best = self.scores_list
+        if len(self._scores_list) < 6:
+            self._five_best = self._scores_list
         else:
-            self.five_best = self.scores_list[:5]
+            self._five_best = self._scores_list[:5]
          
-        for score in self.five_best:
+        for score in self._five_best:
             if len(str(score)) == 1:
                 for num in str(score):
-                    self.score_list.append(arcade.Sprite(SCORE[num], 1,
+                    self._score_list.append(arcade.Sprite(SCORE[num], 1,
                                            center_x=x_position,
                                            center_y=y_position))
                     y_position -= 50
 
             if len(str(score)) == 2:
                 for num in str(score):
-                    self.score_list.append(arcade.Sprite(SCORE[num], 1, 
+                    self._score_list.append(arcade.Sprite(SCORE[num], 1, 
                                            center_x=x_position, 
                                            center_y=y_position))
                     x_position += 24
@@ -477,70 +476,70 @@ class Game(arcade.Window):
         """generates random platform"""
 
         new_platform = None
-        for plat in self.platform_sprites:
+        for plat in self._platform_sprites:
             if plat.right <= 0:
                 plat.kill()
-            elif len(self.platform_sprites) == 1 and plat.right <= random.randrange(self.width // 2, self.width // 2 + 15):
+            elif len(self._platform_sprites) == 1 and plat.right <= random.randrange(self.width // 2, self.width // 2 + 15):
                 new_platform = Platform.random_platform_generator()
 
         if new_platform:
-            self.platform_sprites.append(new_platform)
+            self._platform_sprites.append(new_platform)
 
     def on_update(self, delta_time: float) -> None:
         """
         This a function to update all the images on screen before being drawn
         """
-        self.player_list.update_animation()
+        self._player_list.update_animation()
 
-        if self.state == State.PLAYING:
+        if self._state == State.PLAYING:
             self.generate_platform()
-            self.player.gravity_on = True
+            self._player._gravity_on = True
 
-            if self.jump:
-                self.player.jump()
-                self.jump = False
-                self.player.center_y -= 2
+            if self._jump:
+                self._player.jump()
+                self._jump = False
+                self._player.center_y -= 2
                
-            if self.player.center_y <= 0:
-                self.state = State.GAME_OVER
+            if self._player.center_y <= 0:
+                self._state = State.GAME_OVER
                 
-            if self.player.top > self.height:
-                self.player.top = self.height
+            if self._player.top > self.height:
+                self._player.top = self.height
 
-            if self.player.center_x >= self.platform_sprites[0].center_x and not self.platform_sprites[0].scored:
-                self.score += 1
-                self.platform_sprites[0].scored = True
+            if self._player.center_x >= self._platform_sprites[0].center_x and not self._platform_sprites[0]._scored:
+                self._score += 1
+                self._platform_sprites[0]._scored = True
 
-            hit = arcade.check_for_collision_with_list(self.player, 
-                                                       self.enemy_sprites)
+            hit = arcade.check_for_collision_with_list(self._player, 
+                                                       self._enemy_sprites)
             if any(hit):
-                self.state = State.GAME_OVER
+                self._state = State.GAME_OVER
             # checking when double jump is used up
-            if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2 and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
-                self.double_jump = True
-            if self.player.center_y > self.platform_sprites[0].center_y + 120:
-                self.double_jump = False
-            if self.player.center_y < self.platform_sprites[0].center_y - 100:
-                self.double_jump = False
+            if self._player.center_y - self._player.height//2 <= self._platform_sprites[0].center_y + self._platform_sprites[0].height//2 and self._player.center_y >= self._platform_sprites[0].center_y - self._platform_sprites[0].height//2 and self._player.center_x <= self._platform_sprites[0].center_x + self._platform_sprites[0].width//2 and self._player.center_x >= self._platform_sprites[0].center_x - self._platform_sprites[0].width//2:
+                self._double_jump = True
+            if self._player.center_y > self._platform_sprites[0].center_y + 120:
+                self._double_jump = False
+            if self._player.center_y < self._platform_sprites[0].center_y - 100:
+                self._double_jump = False
             # check if the player collides with platform
-            if self.player.center_y - self.player.height//2 <= self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 and self.player.center_y >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_x <= self.platform_sprites[0].center_x + self.platform_sprites[0].width//2 and self.player.center_x >= self.platform_sprites[0].center_x - self.platform_sprites[0].width//2:
-                self.player.center_y = self.platform_sprites[0].center_y + self.platform_sprites[0].height//2 + self.player.height//2
+            if self._player.center_y - self._player.height//2 <= self._platform_sprites[0].center_y + self._platform_sprites[0].height//2 and self._player.center_y >= self._platform_sprites[0].center_y - self._platform_sprites[0].height//2 and self._player.center_x <= self._platform_sprites[0].center_x + self._platform_sprites[0].width//2 and self._player.center_x >= self._platform_sprites[0].center_x - self._platform_sprites[0].width//2:
+                self._player.center_y = self._platform_sprites[0].center_y + self._platform_sprites[0].height//2 + self._player.height//2
             # check if the player hits the platform from under
-            if self.player.center_y + self.player.height//2 >= self.platform_sprites[0].center_y - self.platform_sprites[0].height//2 and self.player.center_y <= self.platform_sprites[0].center_y and self.player.center_x > self.platform_sprites[0].center_x - self.platform_sprites[0].width//2 and self.player.center_x < self.platform_sprites[0].center_x + self.platform_sprites[0].width//2:
-                self.state = State.GAME_OVER
+            if self._player.center_y + self._player.height//2 >= self._platform_sprites[0].center_y - self._platform_sprites[0].height//2 and self._player.center_y <= self._platform_sprites[0].center_y and self._player.center_x > self._platform_sprites[0].center_x - self._platform_sprites[0].width//2 and self._player.center_x < self._platform_sprites[0].center_x + self._platform_sprites[0].width//2:
+                self._state = State.GAME_OVER
             # This calls update() method on each object in the SpriteList
-            self.player_list.update()
-            self.player_list.update_animation()
-            self.platform_sprites.update()
-            self.enemy_sprites.update()
+            self._player_list.update()
+            self._player_list.update_animation()
+            self._platform_sprites.update()
+            self._enemy_sprites.update()
         # if state is game over the player is updated, the gravity is deactivated and the score board is called
-        if self.state == State.GAME_OVER:
-            self.player.update()
-            self.player.gravity_on = False
+        if self._state == State.GAME_OVER:
+            self._player.update()
+            self._player._gravity_on = False
             self.scoreboard()
             
-            if self.stored_score is False:
-                self.store_score(self.score)
+            if self._stored_score is False:
+                self.store_score(self._score)
                 self.display_score_list()
                 
                 
