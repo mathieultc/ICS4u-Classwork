@@ -507,13 +507,15 @@ class Game(arcade.Window):
 
     def store_score(self, score: int) -> None:
         """stores the score when game is over
-        
+
         Args:
             score(int): the player's score
         """
         with open("score.json", "r") as f:
             data = json.load(f)
+
         data[f"user {len(data) + 1}"] = score
+        
         with open("score.json", "w") as f:
             json.dump(data, f)
 
